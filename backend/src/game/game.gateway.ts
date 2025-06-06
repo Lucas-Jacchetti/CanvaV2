@@ -1,5 +1,6 @@
 import { Server, Socket } from "socket.io";
 import {
+  ConnectedSocket,
   OnGatewayConnection,
   OnGatewayDisconnect,
   OnGatewayInit,
@@ -19,15 +20,23 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   }
 
   handleConnection(client: Socket) { //gerencia a conexãod de um novo jogador
+    this.logger.log(`Client connected: ${client.id}`); //log temporario para registrar a conexão
     this.gameService.addPlayer(client.id); // adiciona jogador ao estado
     client.emit('init', this.gameService.getGameState()); // envia estado atual para ele
     client.broadcast.emit('newPlayer', { id: client.id }); // avisa aos outros que um novo jogador entrou
   }
 
     handleDisconnect(client: Socket) { //gerencia a said a de um novo jogador
+    this.logger.log(`Client disconnected: ${client.id}`); //log temporario para registrar a desconexão
     this.gameService.removePlayer(client.id); // remove jogador do estado
     client.broadcast.emit('playerLeft', client.id); // avisa aos outros jogadores
   }
+
+    @SubscribeMessage('jump')
+    handleJump(@ConnectedSocket() client: Socket) { //*arrumar parametros eu acho
+      this.gameService.jumpPlayer(client.id);
+      client.broadcast.emit('playerJumped', { id: client.id }); // avisa aos outros jogadores que o jogador pulou
+    }
 
 
 }
