@@ -4,14 +4,14 @@ interface Player { //cria uma inerface para definir as propiedades do player
     id: string;
     x: number;
     y: number;
+    vy: number;
     color: string;
+    isJumping: boolean;
 }
 
 @Injectable()
 export class GameService {
-    jumpPlayer(id: string) {
-        throw new Error("Method not implemented.");
-    }
+    
     private players: Record<string, Player> = {};
 
     addPlayer(id: string) { //adiciona um jogador, atribuindo uma posição e cor aleatorias
@@ -19,8 +19,37 @@ export class GameService {
         id,
         x: Math.random() * 700 + 50,
         y: Math.random() * 500 + 50,
+        vy: 0,
         color: this.randomColor(),
+        isJumping: false
         };
+    }
+
+    updatePhysics() {
+        const gravity = 1;
+        const groundY = 550;
+
+        for (const player of Object.values(this.players)) {
+            if (player.isJumping) {
+            player.vy += gravity;
+            player.y += player.vy;
+                if (player.y >= groundY) {
+                    player.y = groundY;
+                    player.vy = 0;
+                    player.isJumping = false;
+                }
+            }
+        }
+    }
+
+
+    jumpPlayer(id: string) {
+        const player = this.players[id]
+
+        if (!player || player.isJumping) return;
+
+        player.vy = -15; // impulso para cima
+        player.isJumping = true;
     }
 
     removePlayer(id: string) {
@@ -32,8 +61,6 @@ export class GameService {
         const player = this.players[id]; //o player será especifico por base de um id
         if (!player) return;
 
-        if (direction === 'up') player.y -= speed;  //movimentação
-        if (direction === 'down') player.y += speed;
         if (direction === 'left') player.x -= speed;
         if (direction === 'right') player.x += speed;
 
