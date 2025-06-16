@@ -53,4 +53,12 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       };
     }
 
+    @WebSocketServer() server: Server;
+    onModuleInit() { //loop de atualizaçã do jogo
+        setInterval(() => {
+        this.gameService.updatePhysics();
+        const state = this.gameService.getGameState();
+        this.server.emit("state", state);
+      }, 50); 
+    }
 }
