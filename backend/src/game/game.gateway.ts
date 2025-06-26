@@ -1,6 +1,7 @@
 import { Server, Socket } from "socket.io";
 import {
   ConnectedSocket,
+  MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
   OnGatewayInit,
@@ -35,23 +36,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       client.broadcast.emit('playerLeft', client.id); 
     }
 
-    @SubscribeMessage('jump') //nao seu fazer o jump ainda 
-    handleJump(@ConnectedSocket() client: Socket) { //*arrumar parametros eu acho
-      this.gameService.jumpPlayer(client.id);
-
-      const state = this.gameService.getGameState();
-      client.broadcast.emit('state', state);
-    }
     
-    @SubscribeMessage("ping")
-    handleMessage(client: any, data: any) {
-      this.logger.log(`Message received from client id: ${client.id}`);
-      this.logger.debug(`Payload: ${data}`);
-      return {
-        event: "pong",
-        data,
-      };
-    }
 
     @WebSocketServer() server: Server;
     onModuleInit() { //loop de atualizaçã do jogo

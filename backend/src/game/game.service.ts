@@ -1,36 +1,36 @@
 import { Injectable } from '@nestjs/common';
-
-interface Player { //cria uma inerface para definir as propiedades do player
-    id: string;
-    x: number;
-    y: number;
-    vy: number;
-    color: string;
-    isJumping: boolean;
-}
-
+import { Player } from './types/player.type';
+import { GameState } from './types/game-state.type';
 @Injectable()
 export class GameService {
+    private state: GameState = {
+        players: {}
+    };
     
-    private players: Record<string, Player> = {};
 
-    addPlayer(id: string) { //adiciona um jogador, atribuindo uma posição e cor aleatorias
-        this.players[id] = {
+    addPlayer(id: string) { //adiciona um jogador, atribuindo informações pré definidas na interface
+        const newPlayer: Player = {
         id,
-        x: Math.random() * 700 + 50,
-        y: Math.random() * 500 + 50,
+        x: 200,
+        y: 1,
         vy: 0,
-        color: this.randomColor(),
-        isJumping: false
+        isJumping: false,
+        startTime: Date.now(),
+        finished: false
         };
+        this.state.players[id] = newPlayer;
+    }
+
+    removePlayer(id: string) {
+        delete this.state.players[id]; //deleta o jogador do vetor
     }
 
     updatePhysics() {
         const gravity = 1;
         const groundY = 550;
 
-        for (const player of Object.values(this.players)) {
-            if (player.isJumping) {
+        for (const player of Object.values(this.state.players)) {
+            if (this.state.players.isJumping) {
             player.vy += gravity;
             player.y += player.vy;
                 if (player.y >= groundY) {
@@ -42,9 +42,8 @@ export class GameService {
         }
     }
 
-
     jumpPlayer(id: string) {
-        const player = this.players[id]
+        const player = this.state.players[id]
 
         if (!player || player.isJumping) return;
 
@@ -52,28 +51,23 @@ export class GameService {
         player.isJumping = true;
     }
 
-    removePlayer(id: string) {
-        delete this.players[id]; //deleta o jogador do vetor
+    movePlayer(id: string, data: { dx: number; dy: number }) {
+    const player = this.state.players[id];
+    if (!player) return;
+
+    player.x += data.dx;
+    player.y += data.dy;
+
+    // Verifica se chegou no topo (linha de chegada)
+    if (player.y <= 0) {
+        const time = Date.now() - player.startTime;
+        console.log(`Jogador ${id} finalizou em ${time}ms`);
     }
-
-    movePlayer(id: string, direction: string) {//movimentação do jogador
-        const speed = 5; //velocidade é 5
-        const player = this.players[id]; //o player será especifico por base de um id
-        if (!player) return;
-
-        if (direction === 'left') player.x -= speed;
-        if (direction === 'right') player.x += speed;
-
-        // Limita área do canvas (opcional)
-        player.x = Math.max(0, Math.min(770, player.x));
-        player.y = Math.max(0, Math.min(570, player.y));
     }
 
     getGameState() {
-        return this.players; //retorna o estado
+        return this.state.players; //retorna o estado
     }
 
-    private randomColor(): string {
-        return `hsl(${Math.random() * 360}, 70%, 50%)`; //retorna uma cor aleatoria
-    }
+    
 }
