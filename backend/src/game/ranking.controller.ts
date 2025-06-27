@@ -1,4 +1,4 @@
-import { Controller, Get, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Delete, Query, Param } from '@nestjs/common';
 import { RankingService } from './ranking.service';
 
 @Controller('ranking')
@@ -14,6 +14,11 @@ export class RankingContoller{
     @Get()
     async getAll(){
         return await this.rankingService.getAll();
+    }
+
+    @Get()
+    async getById(@Param('id') id: string){
+        return await this.rankingService.getById(id)
     }
 
     @Delete()
