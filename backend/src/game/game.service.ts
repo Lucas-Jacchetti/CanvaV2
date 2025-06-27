@@ -1,11 +1,27 @@
 import { Injectable } from '@nestjs/common';
 import { Player } from './types/player.type';
 import { GameState } from './types/game-state.type';
+import { Obstacle } from './types/obstacle.type';
 @Injectable()
 export class GameService {
     private state: GameState = {
-        players: {}
+        players: {},
+        obstacles: [
+            { id: 'obs1', x: 100, y: 500, width: 100, height: 20 },
+            { id: 'obs2', x: 250, y: 400, width: 100, height: 20 },
+            { id: 'obs3', x: 150, y: 300, width: 100, height: 20 },
+        ]
     };
+
+    checkCollision(playerX: number, playerY: number ): boolean{
+        for (let i = 0; i < this.state.obstacles.length; i++) {
+            const element = this.state.obstacles[i];
+            if ((element.x + element.width) == playerX && (element.y + element.height) == playerY) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     addPlayer(id: string) { //adiciona um jogador, atribuindo informações pré definidas na interface
         const newPlayer: Player = {
