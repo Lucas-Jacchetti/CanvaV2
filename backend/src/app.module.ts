@@ -4,6 +4,8 @@ import { AppService } from './app.service';
 import { GameGateway } from './game/game.gateway';
 import { GameService } from './game/game.service';
 import { RankingService } from './game/ranking.service';
+import { RankingContoller } from './game/ranking.controller';
+
 
 @Module({
   imports: [],
