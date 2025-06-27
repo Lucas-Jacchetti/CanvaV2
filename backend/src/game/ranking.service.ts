@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 
 @Injectable()
-export class rankingService {
+export class RankingService {
     private prisma = new PrismaClient();
 
     async save(playerId: string, time: number) {
