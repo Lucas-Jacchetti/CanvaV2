@@ -110,6 +110,12 @@ export class GameService {
         
     }
 
+    resetGame(){
+        for (const id in this.state.players){
+            this.restartPlayer(id);
+        }
+    }
+
     getGameState() {
         return this.state.players; //retorna o estado
     }

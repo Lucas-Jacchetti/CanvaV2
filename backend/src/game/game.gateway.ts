@@ -48,6 +48,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       const finishTime = this.gameService.checkFinish(client.id);
       if (finishTime !== null) {
         this.rankingService.save(client.id, finishTime);
+        client.emit('playerFinished', { time: finishTime }) //emite individualmente
         this.server.emit('rankingUpdate', this.rankingService.getTop(10));
       }
 
