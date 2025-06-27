@@ -82,14 +82,18 @@ export class GameService {
         player.y += data.y;
     }
 
-    checkFinish(id: string){
+    checkFinish(id: string): number | null{
         const player = this.state.players[id];
 
-        if (player.y <= 0 && !player.finished) {
-            player.finished = true;
-            const time = Date.now() - player.startTime;
-            console.log(`Jogador ${id} finalizou em ${time}ms`);
-        }
+        if (!player || !player.finished) return null
+            
+        player.finished = true;
+        const time = Date.now() - player.startTime;
+        player.finishTime = time;
+        console.log(`Jogador ${id} finalizou em ${time}ms`);
+        
+        return time;
+        
     }
 
     getGameState() {

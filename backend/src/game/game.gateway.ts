@@ -11,10 +11,12 @@ import {
 } from "@nestjs/websockets";
 import { Logger } from "@nestjs/common";
 import { GameService } from "./game.service";
+import { rankingService } from "./ranking.service";
 
 @WebSocketGateway({ cors: true }) //escuta e responde a eventos de WebSocket
 export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect{ //interfaces para lidar com entrada e saida de jogadores
-  constructor(private gameService: GameService) {}
+  constructor(
+    private gameService: GameService, private rankingService: rankingService) {}
 
     private readonly logger = new Logger(GameGateway.name); // logger para registrar eventos
     afterInit() {
@@ -42,7 +44,13 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       @MessageBody() data: { x: number, y: number }
     ){
       this.gameService.movePlayer(client.id, data);
-      this.gameService.checkFinish(client.id)
+
+      const finishTime = this.gameService.checkFinish(client.id);
+      if (finishTime !== null) {
+        this.rankingService.save(client.id, finishTime);
+        this.server.emit('rankingUpdate', this.rankingService.getTop(10));
+      }
+
       this.server.emit('state', this.gameService.getGameState())
     }
 
