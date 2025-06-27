@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Player } from './types/player.type';
 import { GameState } from './types/game-state.type';
-import { Obstacle } from './types/obstacle.type';
 @Injectable()
 export class GameService {
     private state: GameState = {
@@ -59,11 +58,9 @@ export class GameService {
                 if (this.checkCollision(player.x, nextY)) {
                     player.vy = 0;
                     player.isJumping = false;
-                    
                 }
 
                 player.y = nextY;
-
             }
         }
     }
