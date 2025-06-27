@@ -1,25 +1,30 @@
-import { Injectable } from "@nestjs/common";
-import { RankingEntry } from "./types/ranking.type";
+import { Injectable } from '@nestjs/common';
+import { PrismaClient } from '@prisma/client';
 
 @Injectable()
-export class rankingService{
-    private ranking: RankingEntry[] = [];
+export class rankingService {
+    private prisma = new PrismaClient();
 
-
-    save(playerId: string, time: number){
-        this.ranking.push({playerId, time})
-        this.ranking.sort((a, b) => a.time - b.time); //menor tempo 1°
+    async save(playerId: string, time: number) {
+        await this.prisma.rankingEntry.create({
+        data: { playerId, time },
+        });
     }
 
-    getTop(limit = 10): RankingEntry[] { //pega os 10 mais rapidos
-        return this.ranking.slice(0, limit);
+    async getTop(limit = 10) {
+        return await this.prisma.rankingEntry.findMany({
+        orderBy: { time: 'asc' },
+        take: limit,
+        });
     }
 
-    getAll(): RankingEntry[] { //pega todos
-        return [...this.ranking]; // cópia do array
-    } 
+    async getAll() {
+        return await this.prisma.rankingEntry.findMany({
+        orderBy: { time: 'asc' },
+        });
+    }
 
-    clear() {
-        this.ranking = [];
+    async clear() {
+        await this.prisma.rankingEntry.deleteMany();
     }
 }
