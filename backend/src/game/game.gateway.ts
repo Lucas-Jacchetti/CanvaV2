@@ -36,14 +36,28 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       client.broadcast.emit('playerLeft', client.id); 
     }
 
-    
+    @SubscribeMessage('move')
+    handleMove(
+      @ConnectedSocket() client: Socket,
+      @MessageBody() data: { x: number, y: number }
+    ){
+      this.gameService.movePlayer(client.id, data);
+      this.gameService.checkFinish(client.id)
+      this.server.emit('state', this.gameService.getGameState())
+    }
+
+    @SubscribeMessage('jump')
+    handleJump(
+      @ConnectedSocket() client: Socket){
+      this.gameService.jumpPlayer(client.id)
+      this.server.emit('state', this.gameService.getGameState())
+    }
 
     @WebSocketServer() server: Server;
-    onModuleInit() { //loop de atualizaçã do jogo
+    onModuleInit() { //loop de atualização do jogo
         setInterval(() => {
         this.gameService.updatePhysics();
-        const state = this.gameService.getGameState();
-        this.server.emit("state", state);
-      }, 50); 
+        this.server.emit('state', this.gameService.getGameState());
+      }, 1000 / 60); // 60 FPS
     }
 }

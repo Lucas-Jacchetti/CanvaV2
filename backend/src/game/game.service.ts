@@ -51,17 +51,21 @@ export class GameService {
     }
 
     movePlayer(id: string, data: { x: number; y: number }) {
-    const player = this.state.players[id];
-    if (!player) return;
+        const player = this.state.players[id];
+        if (!player) return;
 
-    player.x += data.x;
-    player.y += data.y;
-
-    // vrifica se o player chegou na linha de chegada
-    if (player.y <= 0) {
-        const time = Date.now() - player.startTime;
-        console.log(`Jogador ${id} finalizou em ${time}ms`);
+        player.x += data.x;
+        player.y += data.y;
     }
+
+    checkFinish(id: string){
+        const player = this.state.players[id];
+
+        if (player.y <= 0 && !player.finished) {
+            player.finished = true;
+            const time = Date.now() - player.startTime;
+            console.log(`Jogador ${id} finalizou em ${time}ms`);
+        }
     }
 
     getGameState() {
