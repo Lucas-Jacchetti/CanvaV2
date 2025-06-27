@@ -17,6 +17,7 @@ datasource db {
 model RankingEntry{
   id String @id @default(uuid())
   playerId String
+  playerName String
   time Int
   createdAt DateTime @default(now())
 }

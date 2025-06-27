@@ -23,15 +23,17 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       this.logger.log("Initialized"); //indica que o gateway foi inicializado
     }
 
-    handleConnection(client: Socket) { //gerencia a conexãod de um novo jogador
+    @SubscribeMessage('join')
+    handleConnection(@ConnectedSocket() client: Socket, @MessageBody() data: { name: string }) { //gerencia a conexãod de um novo jogador
       this.logger.log(`Client connected: ${client.id}`); //log temporario para registrar a conexão
       
-      this.gameService.addPlayer(client.id); // adiciona jogador ao estado
+      this.gameService.addPlayer(client.id, data.name); // adiciona jogador ao estado
       client.emit('init', this.gameService.getGameState()); // envia estado atual para ele
       client.broadcast.emit('newPlayer', { id: client.id }); // avisa aos outros que um novo jogador entrou
     }
 
-    handleDisconnect(client: Socket) { //gerencia a saidaa de um novo jogador
+    @SubscribeMessage('disconnect')
+    handleDisconnect(@ConnectedSocket() client: Socket) { //gerencia a saidaa de um novo jogador
       this.logger.log(`Client disconnected: ${client.id}`); //log temporario para registrar a desconexão
 
       this.gameService.removePlayer(client.id); // remove jogador
@@ -45,10 +47,12 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     ){
       this.gameService.movePlayer(client.id, data);
 
+      const player = this.gameService.getPlayer(client.id);
       const finishTime = this.gameService.checkFinish(client.id);
+
       if (finishTime !== null) {
-        this.rankingService.save(client.id, finishTime);
-        client.emit('playerFinished', { time: finishTime }) //emite individualmente
+        this.rankingService.save(player.id, finishTime, player.name);
+        client.emit('playerFinished', { time: finishTime });
         this.server.emit('rankingUpdate', this.rankingService.getTop(10));
       }
 

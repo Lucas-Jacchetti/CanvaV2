@@ -1,5 +1,6 @@
 export interface RankingEntry {
     playerId: string;
+    playerName: string;
     time: number;
 }
 

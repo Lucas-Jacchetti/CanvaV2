@@ -1,5 +1,6 @@
 export interface Player{
-    id: String;
+    id: string;
+    name: string;
     x: number;
     y: number;
     vy: number;

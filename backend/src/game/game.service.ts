@@ -22,9 +22,10 @@ export class GameService {
         return false;
     }
 
-    addPlayer(id: string) { //adiciona um jogador, atribuindo informações pré definidas na interface
+    addPlayer(id: string, name: string) { //adiciona um jogador, atribuindo informações pré definidas na interface
         const newPlayer: Player = {
         id,
+        name,
         x: 200,
         y: 1,
         vy: 0,
@@ -34,6 +35,12 @@ export class GameService {
         };
         this.state.players[id] = newPlayer;
     }
+
+    getPlayer(id: string): Player {
+        const player = this.state.players[id];
+        if (!player) throw new Error(`Player ${id} not found`);
+        return player;
+    }   
 
     removePlayer(id: string) {
         delete this.state.players[id]; //deleta o jogador do vetor

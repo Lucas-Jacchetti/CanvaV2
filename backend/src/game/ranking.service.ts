@@ -5,9 +5,9 @@ import { PrismaClient } from '@prisma/client';
 export class RankingService {
     private prisma = new PrismaClient();
 
-    async save(playerId: string, time: number) {
+    async save(playerId: string, time: number, playerName: string) {
         await this.prisma.rankingEntry.create({
-        data: { playerId, time },
+        data: { playerId, time, playerName },
         });
     }
 
