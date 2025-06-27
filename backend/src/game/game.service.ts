@@ -39,6 +39,20 @@ export class GameService {
         delete this.state.players[id]; //deleta o jogador do vetor
     }
 
+    restarPlayer(id: string){
+        const player = this.state.players[id];
+
+        if (!player) return;
+
+        player.x = 200;
+        player.y = 0;
+        player.vy = 0;
+        player.isJumping = false;
+        player.startTime = Date.now();
+        player.finished = false;
+        player.finishTime = undefined;
+    }
+
     updatePhysics() { //chamada em um loop de atualização
         const gravity = 1;
         const groundY = 550;
