@@ -18,6 +18,13 @@ export class RankingService {
         });
     }
 
+    async getById(playerId: string){
+        await this.prisma.rankingEntry.findMany({
+            where: { playerId },
+            orderBy: { time: 'asc' }, //menor primeiro
+        })
+    }
+
     async getAll() {
         return await this.prisma.rankingEntry.findMany({
         orderBy: { time: 'asc' },
