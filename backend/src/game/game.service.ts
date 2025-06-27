@@ -39,7 +39,7 @@ export class GameService {
         delete this.state.players[id]; //deleta o jogador do vetor
     }
 
-    restarPlayer(id: string){
+    restartPlayer(id: string){
         const player = this.state.players[id];
 
         if (!player) return;

@@ -54,9 +54,13 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       this.server.emit('state', this.gameService.getGameState())
     }
 
+    @SubscribeMessage('restart')
+    handleRestart(@ConnectedSocket() client: Socket){
+      this.gameService.restartPlayer(client.id)
+    }
+
     @SubscribeMessage('jump')
-    handleJump(
-      @ConnectedSocket() client: Socket){
+    handleJump(@ConnectedSocket() client: Socket){
       this.gameService.jumpPlayer(client.id)
       this.server.emit('state', this.gameService.getGameState())
     }
