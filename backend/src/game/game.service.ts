@@ -47,12 +47,23 @@ export class GameService {
         for (const player of Object.values(this.state.players)) {
             if (player.isJumping) {
             player.vy += gravity; //acelera para baixo (velocidade vertical incrementa conforme o valor da gravidade)
-            player.y += player.vy; //move o jogador para baixo (posição se torna velociadade y)
-                if (player.y >= groundY) { //se o player tocar no chão, reseta td
+            const nextY = player.vy + player.y; //criação de uma variavel pra simular a movimentação do jogador, a fim de evitar bugs (mover o jogador após todas as checagens)
+                
+                if (nextY >= groundY) { //se o player tocar no chão, reseta td
                     player.y = groundY; 
                     player.vy = 0;
                     player.isJumping = false;
+                    continue;
                 }
+
+                if (this.checkCollision(player.x, nextY)) {
+                    player.vy = 0;
+                    player.isJumping = false;
+                    
+                }
+
+                player.y = nextY;
+
             }
         }
     }
