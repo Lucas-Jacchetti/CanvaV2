@@ -13,10 +13,11 @@ export class GameService {
     };
 
     checkCollision(playerX: number, playerY: number ): boolean{
-        for (let i = 0; i < this.state.obstacles.length; i++) {
-            const element = this.state.obstacles[i];
-            if ((element.x + element.width) == playerX && (element.y + element.height) == playerY) {
-                return true;
+        for (const obs of this.state.obstacles) {
+            const withinX = playerX >= obs.x && playerX <= obs.x + obs.width;
+            const withinY = playerY >= obs.y && playerY <= obs.y + obs.height;
+            if (withinX && withinY) {
+            return true;
             }
         }
         return false;
@@ -52,7 +53,7 @@ export class GameService {
         if (!player) return;
 
         player.x = 200;
-        player.y = 0;
+        player.y = 1;
         player.vy = 0;
         player.isJumping = false;
         player.startTime = Date.now();
@@ -106,7 +107,7 @@ export class GameService {
     checkFinish(id: string): number | null{
         const player = this.state.players[id];
 
-        if (!player || !player.finished) return null
+        if (!player || player.finished) return null
             
         player.finished = true;
         const time = Date.now() - player.startTime;
