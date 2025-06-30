@@ -1,5 +1,4 @@
 
-import Canva from './components/canva'
 import './index.css'
 
 function App() {
@@ -7,7 +6,7 @@ function App() {
   
   return (
     <>
-      <Canva/>
+    
     </>
   )
 }
