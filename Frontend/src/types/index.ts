@@ -27,3 +27,8 @@ export interface Ranking {
     roomId: string;
     players: RankingEntry[];
 }
+
+export interface GameState {
+    players: Record<string, Player>;
+    obstacles: Obstacle[];
+}
