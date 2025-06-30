@@ -17,3 +17,13 @@ export interface Obstacle{
     width: number;
     height: number;
 }
+export interface RankingEntry {
+    playerId: string;
+    playerName: string;
+    time: number;
+}
+
+export interface Ranking {
+    roomId: string;
+    players: RankingEntry[];
+}
