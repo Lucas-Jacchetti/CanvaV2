@@ -8,8 +8,10 @@ export function useSocket(name: string){
     const socketRef = useRef<Socket | null>(null);
     const [gameState, setGameState] = useState< GameState | null>(null); 
     const [ranking, setRanking] = useState< RankingEntry[] >([]);
-    const [playerId, setPlayerId] = useState< number | null >(null);
-    const [finishTime, setFinishTime] = useState< string | null >(null);
+    const [playerId, setPlayerId] = useState< string | null >(null);
+    const [finishTime, setFinishTime] = useState< number | null >(null);
+    const [playerName, setPlayerName] = useState<string>(""); 
+    const [startTime, setStartTime] = useState<number>(Date.now()); 
 
     useEffect(() => {
         const socket = io("http://localhost:3000");
@@ -17,10 +19,12 @@ export function useSocket(name: string){
 
         socket.emit("join", { name} ); 
 
-        socket.on("init", (state: GameState) => { //reage a eventos do servidor (.on)
-            setGameState(state);
-            setPlayerId(Number(socket.id));
-        })
+        socket.on("connect", () => {
+            setPlayerId(socket.id ?? null); // agora é 100% garantido que já existe
+            socket.emit("join", { name });
+            setPlayerName(name);
+            setStartTime(Date.now());
+        });
 
         socket.on("state", (state: GameState) => {
             setGameState(state);
@@ -30,8 +34,8 @@ export function useSocket(name: string){
             setRanking(rankingData);
         })
 
-        socket.on("finishTime", ({time}: { time: number }) => {
-            setFinishTime(time.toString());
+        socket.on("playerFinished", ({time}: { time: number }) => {
+            setFinishTime(Number(time));
         })
 
         return () => {
@@ -64,5 +68,7 @@ export function useSocket(name: string){
         jump,
         restart,
         resetGame,
+        playerName,    // <-- exporta o nome
+        startTime
     };
 }

@@ -1,6 +1,6 @@
 import { useSocket } from "../hooks/useSockets";
 import { Canvas } from "../components/canvas";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 
 function GamePage(){
@@ -14,14 +14,16 @@ function GamePage(){
         jump,
         restart,
         resetGame,
-    } = useSocket("Jogador");
+        playerName,
+        startTime,
+    } = useSocket("Player");
 
     useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
         if (e.code === "ArrowLeft") {
-        move(-5, 0);
+        move(-1, 0);
         } else if (e.code === "ArrowRight") {
-        move(5, 0);
+        move(1, 0);
         } else if (e.code === "Space") {
         jump();
         }
@@ -34,45 +36,56 @@ function GamePage(){
         };
     }, [move, jump]);
 
+    const [liveTime, setLiveTime] = useState(0);
+
+    useEffect(() => {
+        if (!finishTime && startTime) {
+            const interval = setInterval(() => {
+            setLiveTime(Date.now() - startTime);
+            }, 1000);
+            return () => clearInterval(interval);
+        }
+    }, [finishTime, startTime]);
+
     return(
         <>
         <div className="flex flex-row justify-center gap-4 p-4 bg-gray-900 text-white min-h-screen">
+
+            <div className="text-center text-white mb-4">
+            <h1 className="text-2xl font-bold">Jogador: {playerName}</h1>
+
+            {!finishTime && <p>⏱️ Tempo: {(liveTime / 1000).toFixed(1)}s</p>}
+            {finishTime && <p className="text-green-400">🎉 Você terminou em {(finishTime / 1000).toFixed(2)}s!</p>}
+            </div>
+
             <div className="flex flex-col justify-center items-center gap-3">
                 <h1 className="text-3xl font-bold">Parkour Game</h1>
 
-                <Canvas gameState={gameState} playerId={playerId ? String(playerId) : null}/>
+                <Canvas gameState={gameState} playerId={playerId}/>
 
                 <div className="flex gap-4 mt-2">
                     <button
-                    className="bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded"
+                    className="bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded cursor-pointer"
                     onClick={restart}
                     >
                     Reiniciar Jogador
                     </button>
                     <button
-                    className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded"
+                    className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded cursor-pointer"
                     onClick={resetGame}
                     >
                     Resetar Partida
                     </button>
                 </div>
 
-                {finishTime !== null && (
-                    <p className="text-green-400 text-lg mt-2">
-                    🏁 Você terminou em {finishTime}ms!
-                    </p>
-                )}
+                
             </div>
             <div className="flex flex-col ml-7">
-                <h2 className="text-xl font-semibold mt-6">🏆 Ranking</h2>
-                <ul className="w-full max-w-sm">
+                <h2 className="text-xl font-semibold mb-2">🏁 Ranking</h2>
+                <ul className="space-y-1">
                     {ranking.map((entry, index) => (
-                    <li
-                        key={index}
-                        className="bg-gray-800 p-2 rounded my-1 flex justify-between"
-                    >
-                        <span>{entry.playerName}</span>
-                        <span>{entry.time}ms</span>
+                    <li key={entry.playerId}>
+                        #{index + 1} - {entry.playerName}: {(entry.time / 1000).toFixed(2)}s
                     </li>
                     ))}
                 </ul>

@@ -4,7 +4,6 @@ export function useGameLoop(callback: () => void, fps = 60) {
     const requestRef = useRef<number>(undefined); //guarda o id do frame atual
     const previousTimeRef = useRef<number>(undefined); //armazena o timestamp do ultimo frame executado
 
-
     const animate = (time: number) => { //chamada automaticamente pelo navegador com requestAnimationFrame
         if (!previousTimeRef.current) {
             previousTimeRef.current = time;
@@ -24,7 +23,4 @@ export function useGameLoop(callback: () => void, fps = 60) {
         requestRef.current = requestAnimationFrame(animate);
         return() => cancelAnimationFrame(requestRef.current!);
     }, []);
-
-
-
 }   

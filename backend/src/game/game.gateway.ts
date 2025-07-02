@@ -46,7 +46,6 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       @MessageBody() data: { x: number, y: number }
     ){
       this.gameService.movePlayer(client.id, data);
-      this.server.emit('state', this.gameService.getGameState())
 
       const player = this.gameService.getPlayer(client.id);
       const finishTime = this.gameService.checkFinish(client.id);
@@ -56,6 +55,9 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         client.emit('playerFinished', { time: finishTime });
         this.server.emit('rankingUpdate', this.rankingService.getTop(10));
       }
+
+      this.server.emit('state', this.gameService.getGameState())
+
     }
 
     @SubscribeMessage('restart')
