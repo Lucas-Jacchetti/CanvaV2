@@ -39,5 +39,19 @@ export function useSocket(name: string){
         };
     }, [name]);
 
-    
+    const move = (x: number, y: number) => {
+        socketRef.current?.emit("move", { x, y });
+    };
+
+    const jump = () => {
+        socketRef.current?.emit("jump");
+    }
+
+    const restart = () => {
+        socketRef.current?.emit("restart");
+    }
+
+    const resetGame = () => {
+        socketRef.current?.emit("restartGame");
+    }
 }
