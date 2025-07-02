@@ -15,9 +15,9 @@ export function useSocket(name: string){
         const socket = io("http://localhost:3000");
         socketRef.current = socket;
 
-        socket.emit("join", { name} );
+        socket.emit("join", { name} ); 
 
-        socket.on("init", (state: GameState) => {
+        socket.on("init", (state: GameState) => { //reage a eventos do servidor (.on)
             setGameState(state);
             setPlayerId(Number(socket.id));
         })
@@ -39,7 +39,7 @@ export function useSocket(name: string){
         };
     }, [name]);
 
-    const move = (x: number, y: number) => {
+    const move = (x: number, y: number) => {        //envia ações do jogador (.emit)   
         socketRef.current?.emit("move", { x, y });
     };
 

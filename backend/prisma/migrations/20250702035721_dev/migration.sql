@@ -2,6 +2,7 @@
 CREATE TABLE "RankingEntry" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "playerId" TEXT NOT NULL,
+    "playerName" TEXT NOT NULL,
     "time" INTEGER NOT NULL,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
