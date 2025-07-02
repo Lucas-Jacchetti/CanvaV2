@@ -54,4 +54,15 @@ export function useSocket(name: string){
     const resetGame = () => {
         socketRef.current?.emit("restartGame");
     }
+
+    return {
+        gameState,
+        playerId,
+        finishTime,
+        ranking,
+        move,
+        jump,
+        restart,
+        resetGame,
+    };
 }
