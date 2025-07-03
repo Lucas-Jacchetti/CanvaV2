@@ -6,8 +6,8 @@ export class GameService {
     private state: GameState = {
         players: {},
         obstacles: [
-            { id: 'obs1', x: 100, y: 500, width: 100, height: 20 },
-            { id: 'obs2', x: 250, y: 400, width: 100, height: 20 },
+            { id: 'obs1', x: 100, y: 100, width: 100, height: 20 },
+            { id: 'obs2', x: 250, y: 200, width: 100, height: 20 },
             { id: 'obs3', x: 150, y: 300, width: 100, height: 20 },
         ]
     };
@@ -28,7 +28,7 @@ export class GameService {
         id,
         name,
         x: 200,
-        y: 1,
+        y: 490,
         vy: 0,
         isJumping: false,
         startTime: Date.now(),
@@ -53,7 +53,7 @@ export class GameService {
         if (!player) return;
 
         player.x = 200;
-        player.y = 1;
+        player.y = 490;
         player.vy = 0;
         player.isJumping = false;
         player.startTime = Date.now();
@@ -63,7 +63,7 @@ export class GameService {
 
     updatePhysics() { //chamada em um loop de atualização
         const gravity = 1;
-        const groundY = 550;
+        const groundY = 500;
 
         for (const player of Object.values(this.state.players)) {
             if (player.isJumping) {
@@ -125,7 +125,7 @@ export class GameService {
     }
 
     getGameState() {
-        return this.state.players; //retorna o estado
+        return this.state; //retorna o estado
     }
 
     

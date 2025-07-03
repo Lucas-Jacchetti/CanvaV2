@@ -20,6 +20,7 @@ export function useSocket(name: string){
         socket.emit("join", { name} ); 
 
         socket.on("connect", () => {
+            console.log("Connected! Socket ID:", socket.id);
             setPlayerId(socket.id ?? null); // agora é 100% garantido que já existe
             socket.emit("join", { name });
             setPlayerName(name);
@@ -27,8 +28,22 @@ export function useSocket(name: string){
         });
 
         socket.on("state", (state: GameState) => {
-            setGameState(state);
-        })
+            if (!state) {
+                console.warn("Received null state, keeping previous state");
+                return; // Mantém o estado anterior se receber null
+            }
+            setGameState(prev => ({ ...prev, ...state })); // Merge com estado anterior
+        });
+
+            // Adicione também para o evento 'init':
+        socket.on("init", (initialState: GameState) => {
+            if (!initialState) {
+                console.error("Received null initial state");
+                return;
+            }
+            console.log("Initial game state received:", initialState);
+            setGameState(initialState);
+        });
 
         socket.on("rankingUpdate", (rankingData: RankingEntry[]) => {
             setRanking(rankingData);

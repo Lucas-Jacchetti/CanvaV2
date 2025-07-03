@@ -18,6 +18,8 @@ function GamePage(){
         startTime,
     } = useSocket("Player");
 
+
+
     useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
         if (e.code === "ArrowLeft") {
@@ -83,11 +85,15 @@ function GamePage(){
             <div className="flex flex-col ml-7">
                 <h2 className="text-xl font-semibold mb-2">🏁 Ranking</h2>
                 <ul className="space-y-1">
-                    {ranking.map((entry, index) => (
-                    <li key={entry.playerId}>
+                    {Array.isArray(ranking) && ranking.length > 0 ? (
+                    ranking.map((entry, index) => (
+                        <li key={entry.playerId || `ranking-${index}`}>
                         #{index + 1} - {entry.playerName}: {(entry.time / 1000).toFixed(2)}s
-                    </li>
-                    ))}
+                        </li>
+                    ))
+                    ) : (
+                    <li>Nenhum registro no ranking ainda</li>
+                    )}
                 </ul>
             </div>
         </div>

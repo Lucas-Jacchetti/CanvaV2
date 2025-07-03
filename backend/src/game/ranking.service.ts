@@ -15,7 +15,7 @@ export class RankingService {
         return await this.prisma.rankingEntry.findMany({
         orderBy: { time: 'asc' },
         take: limit,
-        });
+        }) || [];
     }
 
     async getById(playerId: string){

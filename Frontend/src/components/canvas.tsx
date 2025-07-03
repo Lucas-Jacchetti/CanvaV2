@@ -1,7 +1,7 @@
 // src/components/Canvas.tsx
-import { useEffect, useRef } from "react";
+import { useRef, useEffect } from "react";
 import { useGameLoop } from "../hooks/useGameloop";
-import type { GameState, Player, Obstacle } from "../types";
+import type { GameState } from "../types";
 
 interface CanvasProps {
     gameState: GameState | null;
@@ -10,62 +10,64 @@ interface CanvasProps {
 
 export function Canvas({ gameState, playerId }: CanvasProps) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const gameStateRef = useRef<GameState | null>(null);
     const width = 400;
     const height = 500;
-    useGameLoop(() => {
-        const ctx = canvasRef.current?.getContext("2d");
-        if (!ctx || !gameState) return;
 
-        // Limpa o canvas
+    // Atualiza a referência sempre que gameState mudar
+    useEffect(() => {
+        gameStateRef.current = gameState;
+    }, [gameState]);
+
+    useGameLoop(() => {
+        console.log("gameState in loop:", gameStateRef.current)
+        const ctx = canvasRef.current?.getContext("2d");
+        const currentGameState = gameStateRef.current; // Acessa via ref
+        
+        if (!ctx) return;
+
         ctx.clearRect(0, 0, width, height);
 
-        // Linha de chegada (topo da tela)
+        if (!currentGameState) {
+            ctx.fillStyle = "black";
+            ctx.font = "16px Arial";
+            ctx.fillText("Carregando jogo...", width/2 - 80, height/2);
+            return;
+        }
+
+        // Linha de chegada
         ctx.fillStyle = "green";
         ctx.fillRect(0, 0, width, 5);
 
-        // Obstáculos
-        for (const obs of gameState.obstacles) {
-        drawObstacle(ctx, obs);
-        }
+        // Obstáculos (vermelhos para debug)
+        currentGameState.obstacles.forEach(obs => {
+            ctx.fillStyle = "red";
+            ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
+        });
 
         // Jogadores
-        for (const id in gameState.players) {
-        const player = gameState.players[id];
-        drawPlayer(ctx, player, id === playerId);
-        }
+        Object.entries(currentGameState.players).forEach(([id, player]) => {
+            ctx.fillStyle = id === playerId ? "blue" : "green";
+            ctx.beginPath();
+            ctx.arc(player.x, player.y, 10, 0, Math.PI * 2);
+            ctx.fill();
+            
+            if (player.name) {
+                ctx.fillStyle = "black";
+                ctx.font = "10px Arial";
+                ctx.fillText(player.name, player.x - 15, player.y - 15);
+            }
+        });
     });
 
     return (
         <canvas
-        ref={canvasRef}
-        width={width}
-        height={height}
-        className="border-0 rounded-2xl bg-white mx-auto block"
+            ref={canvasRef}
+            width={width}
+            height={height}
+            className="border-2 border-red-500 mx-auto block bg-white"
         />
     );
-    }
-
-    // 🔳 Desenha um obstáculo
-    function drawObstacle(ctx: CanvasRenderingContext2D, obs: Obstacle) {
-    ctx.fillStyle = "gray";
-    ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
-    }
-
-    // 🔴 Desenha o jogador
-    function drawPlayer(
-    ctx: CanvasRenderingContext2D,
-    player: Player,
-    isSelf: boolean
-    ) {
-    ctx.fillStyle = isSelf ? "aqua" : "red";
-    ctx.beginPath();
-    ctx.arc(player.x, player.y, 10, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Nome do jogador
-    if (player.name) {
-        ctx.fillStyle = "white";
-        ctx.font = "12px Arial";
-        ctx.fillText(player.name, player.x - 15, player.y - 15);
-    }
 }
+
+   

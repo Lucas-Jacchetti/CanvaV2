@@ -24,10 +24,14 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     }
 
     @SubscribeMessage('join')
-    handleConnection(@ConnectedSocket() client: Socket, @MessageBody() data: { name: string }) { //gerencia a conexãod de um novo jogador
+    handleConnection(@ConnectedSocket() client: Socket, @MessageBody() data: { name?: string }) { //gerencia a conexãod de um novo jogador
       this.logger.log(`Client connected: ${client.id}`); //log temporario para registrar a conexão
+      const name = data?.name ?? "Anônimo";
       
-      this.gameService.addPlayer(client.id, data.name); // adiciona jogador ao estado
+      const gameState = this.gameService.getGameState();
+      console.log("Sending game state:", gameState);
+      
+      this.gameService.addPlayer(client.id, name); // adiciona jogador ao estado
       client.emit('init', this.gameService.getGameState()); // envia estado atual para ele
       client.broadcast.emit('newPlayer', { id: client.id }); // avisa aos outros que um novo jogador entrou
     }
