@@ -20,7 +20,6 @@ export function Canvas({ gameState, playerId }: CanvasProps) {
     }, [gameState]);
 
     useGameLoop(() => {
-        console.log("gameState in loop:", gameStateRef.current)
         const ctx = canvasRef.current?.getContext("2d");
         const currentGameState = gameStateRef.current; // Acessa via ref
         
@@ -37,7 +36,7 @@ export function Canvas({ gameState, playerId }: CanvasProps) {
 
         // Linha de chegada
         ctx.fillStyle = "green";
-        ctx.fillRect(0, 0, width, 5);
+        ctx.fillRect(0, 8, width, 10);
 
         // Obstáculos (vermelhos para debug)
         currentGameState.obstacles.forEach(obs => {
@@ -65,7 +64,7 @@ export function Canvas({ gameState, playerId }: CanvasProps) {
             ref={canvasRef}
             width={width}
             height={height}
-            className="border-2 border-red-500 mx-auto block bg-white"
+            className="rounded-2xl mx-auto block bg-white"
         />
     );
 }

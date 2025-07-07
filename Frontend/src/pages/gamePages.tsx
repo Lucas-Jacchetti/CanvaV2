@@ -22,10 +22,11 @@ function GamePage(){
 
     useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+        const speed = 1;
         if (e.code === "ArrowLeft") {
-        move(-1, 0);
+        move(-speed, 0);
         } else if (e.code === "ArrowRight") {
-        move(1, 0);
+        move(speed, 0);
         } else if (e.code === "Space") {
         jump();
         }
