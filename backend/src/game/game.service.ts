@@ -7,7 +7,7 @@ export class GameService {
     private readonly PHYSICS = {
         GRAVITY: 1,
         JUMP_FORCE: -15,
-        MOVE_SPEED: 5,
+        MOVE_SPEED: 3,
         FRICTION: 0.9,
         PLAYER_RADIUS: 10,
         GROUND_Y: 490
