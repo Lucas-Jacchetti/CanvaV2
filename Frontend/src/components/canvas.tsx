@@ -34,17 +34,17 @@ export function Canvas({ gameState, playerId }: CanvasProps) {
             return;
         }
 
-        // Linha de chegada
+        //linha de chegada
         ctx.fillStyle = "green";
         ctx.fillRect(0, 8, width, 10);
 
-        // Obstáculos (vermelhos para debug)
+        //renderização dos objetos
         currentGameState.obstacles.forEach(obs => {
             ctx.fillStyle = "red";
             ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
         });
 
-        // Jogadores
+        //renderização jogadores
         Object.entries(currentGameState.players).forEach(([id, player]) => {
             ctx.fillStyle = id === playerId ? "blue" : "green";
             ctx.beginPath();

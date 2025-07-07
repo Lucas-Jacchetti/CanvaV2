@@ -1,6 +1,7 @@
 import { useSocket } from "../hooks/useSockets";
 import { Canvas } from "../components/canvas";
 import { useEffect, useState } from "react";
+import { useControls } from "../hooks/useControls";
 
 
 function GamePage(){
@@ -18,25 +19,7 @@ function GamePage(){
         startTime,
     } = useSocket("Player");
 
-
-
-    useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.code === "ArrowLeft") {
-        move(-1, 0);
-        } else if (e.code === "ArrowRight") {
-        move(1, 0);
-        } else if (e.code === "Space") {
-        jump();
-        }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-            window.removeEventListener("keydown", handleKeyDown);
-        };
-    }, [move, jump]);
+    useControls({move, jump});
 
     const [liveTime, setLiveTime] = useState(0);
 
