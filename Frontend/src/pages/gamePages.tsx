@@ -6,6 +6,8 @@ import { useControls } from "../hooks/useControls";
 
 function GamePage(){
     
+    const storedName = localStorage.getItem("playername") || "Player;"
+
     const {
         gameState,
         playerId,
@@ -17,7 +19,7 @@ function GamePage(){
         resetGame,
         playerName,
         startTime,
-    } = useSocket("Player");
+    } = useSocket(storedName);
 
     useControls({move, jump});
 
