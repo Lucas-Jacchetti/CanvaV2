@@ -13,7 +13,7 @@ function GamePage(){
         ranking,
         move,
         jump,
-        restart,
+        // restart,
         resetGame,
         playerName,
         startTime,
@@ -49,12 +49,7 @@ function GamePage(){
                 <Canvas gameState={gameState} playerId={playerId}/>
 
                 <div className="flex gap-4 mt-2">
-                    <button
-                    className="bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded cursor-pointer"
-                    onClick={restart}
-                    >
-                    Reiniciar Jogador
-                    </button>
+                    
                     <button
                     className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded cursor-pointer"
                     onClick={resetGame}
@@ -77,9 +72,10 @@ function GamePage(){
                     ) : (
                     <li>Nenhum registro no ranking ainda</li>
                     )}
-                </ul>
+                </ul>       
             </div>
         </div>
+
         
         </>
     )

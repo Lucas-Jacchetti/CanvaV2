@@ -1,13 +1,10 @@
-
 import './index.css'
-import GamePage from './pages/gamePages'
+import Routing from './routes/routes'
 
 function App() {
-
-  
   return (
-    <>
-      <GamePage/>
+    <> 
+    <Routing/>
     </>
   )
 }

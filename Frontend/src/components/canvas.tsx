@@ -68,5 +68,3 @@ export function Canvas({ gameState, playerId }: CanvasProps) {
         />
     );
 }
-
-   
