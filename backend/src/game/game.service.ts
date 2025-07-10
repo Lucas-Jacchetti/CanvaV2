@@ -13,18 +13,6 @@ export class GameService {
         GROUND_Y: 490
     };
 
-    // private state: GameState = {
-    //     players: {},
-    //     obstacles: [
-    //         { id: 'obs1', x: 100, y: 100, width: 100, height: 20 },
-    //         { id: 'obs2', x: 250, y: 200, width: 100, height: 20 },
-    //         { id: 'obs3', x: 150, y: 300, width: 100, height: 20 },
-    //         { id: 'obs4', x: 150, y: 450, width: 100, height: 20 },
-    //         { id: 'obs5', x: 150, y: 480, width: 100, height: 20 },
-    //         { id: 'obs6', x: 75, y: 375, width: 100, height: 20 },
-    //     ]
-    // };
-
     private games: {[roomId: string]: GameState} =  {};
 
     createGame(roomId: string, name: string, playerId: string){
@@ -48,6 +36,7 @@ export class GameService {
                 { id: 'obs3', x: 150, y: 300, width: 100, height: 20 },
                 { id: 'obs4', x: 150, y: 450, width: 100, height: 20 },
                 { id: 'obs5', x: 150, y: 480, width: 100, height: 20 },
+                { id: 'obs6', x: 75, y: 375, width: 100, height: 20 },
             ]
         }
     }

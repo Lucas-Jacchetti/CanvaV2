@@ -17,15 +17,22 @@ export function useSocket(name: string){
         const socket = io("http://localhost:3000");
         socketRef.current = socket;
 
-        socket.emit("join", { name, roomId: socket.id} ); 
-
-        socket.on("connect", () => {
-            console.log("Connected! Socket ID:", socket.id);
-            setPlayerId(socket.id ?? null); // agora é 100% garantido que já existe
-            socket.emit("join", { name });
+        const waitForSocketId = () => {
+        if (socket.id) {
+            console.log("Emitindo join com roomId:", socket.id);
+            setPlayerId(socket.id);
             setPlayerName(name);
             setStartTime(Date.now());
-        });
+            socket.emit("join", { name, roomId: socket.id });
+        } else {
+            setTimeout(waitForSocketId, 10); // tenta novamente em 10ms
+        }
+    };
+
+    socket.on("connect", () => {
+        console.log("Connected! Esperando socket.id...");
+        waitForSocketId(); // chama o emissor confiável
+    });
 
         socket.on("state", (state: GameState) => {
             if (!state) {

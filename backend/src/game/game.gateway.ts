@@ -23,11 +23,21 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       this.logger.log("Initialized"); //indica que o gateway foi inicializado
     }
 
+    handleConnection(client: Socket) {
+      this.logger.log(`Client connected: ${client.id}`);
+    }
+
     @SubscribeMessage('join')
-    handleConnection(@ConnectedSocket() client: Socket, @MessageBody() data: { name?: string, roomId: string}) { //gerencia a conexãod de um novo jogador
+    handleJoin(@ConnectedSocket() client: Socket, @MessageBody() data: { name?: string, roomId?: string}) { //gerencia a conexãod de um novo jogador
+      if (!data?.roomId) {
+        this.logger.error(`roomId ausente na conexão de ${client.id}`);
+        client.disconnect();
+        return;
+      }
+      
       const roomId = data.roomId;
       const name = data?.name ?? "Anônimo";
-      
+
       client.data.roomId = roomId;
       client.join(roomId);
       
