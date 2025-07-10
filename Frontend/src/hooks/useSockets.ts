@@ -17,7 +17,7 @@ export function useSocket(name: string){
         const socket = io("http://localhost:3000");
         socketRef.current = socket;
 
-        socket.emit("join", { name} ); 
+        socket.emit("join", { name, roomId: socket.id} ); 
 
         socket.on("connect", () => {
             console.log("Connected! Socket ID:", socket.id);

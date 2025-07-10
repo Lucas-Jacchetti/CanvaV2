@@ -24,24 +24,32 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     }
 
     @SubscribeMessage('join')
-    handleConnection(@ConnectedSocket() client: Socket, @MessageBody() data: { name?: string }) { //gerencia a conexãod de um novo jogador
-      this.logger.log(`Client connected: ${client.id}`); //log temporario para registrar a conexão
+    handleConnection(@ConnectedSocket() client: Socket, @MessageBody() data: { name?: string, roomId: string}) { //gerencia a conexãod de um novo jogador
+      const roomId = data.roomId;
       const name = data?.name ?? "Anônimo";
       
-      const gameState = this.gameService.getGameState();
-      console.log("Sending game state:", gameState);
+      client.data.roomId = roomId;
+      client.join(roomId);
       
-      this.gameService.addPlayer(client.id, name); // adiciona jogador ao estado
-      client.emit('init', this.gameService.getGameState()); // envia estado atual para ele
-      client.broadcast.emit('newPlayer', { id: client.id }); // avisa aos outros que um novo jogador entrou
+      const existingGame = this.gameService.getGameState(roomId);
+      if (!existingGame) {
+        this.gameService.createGame(roomId, name, client.id);
+      } else {
+        this.gameService.addPlayer(roomId, client.id, name);
+      }      
+
+      client.emit('init', this.gameService.getGameState(roomId)); // envia estado atual para ele
+      client.to(roomId).emit('newPlayer', { id: client.id }); // avisa aos outros que um novo jogador entrou
     }
 
     @SubscribeMessage('disconnect')
     handleDisconnect(@ConnectedSocket() client: Socket) { //gerencia a saidaa de um novo jogador
-      this.logger.log(`Client disconnected: ${client.id}`); //log temporario para registrar a desconexão
+      const roomId = client.data.roomId;
+      if (!roomId) return;
 
-      this.gameService.removePlayer(client.id); // remove jogador
-      client.broadcast.emit('playerLeft', client.id); 
+
+      this.gameService.removePlayer(roomId, client.id); // remove jogador
+      client.to(roomId).emit('playerLeft', client.id); 
     }
 
     @SubscribeMessage('move')
@@ -49,44 +57,57 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       @ConnectedSocket() client: Socket,
       @MessageBody() data: { x: number, y: number }
     ){
-      this.gameService.movePlayer(client.id, data);
+      const roomId = client.data.roomId;
+      if (!roomId) return;
+      this.gameService.movePlayer(roomId, client.id, data);
 
-      const player = this.gameService.getPlayer(client.id);
-      const finishTime = this.gameService.checkFinish(client.id);
+      const player = this.gameService.getPlayer(roomId, client.id);
+      const finishTime = this.gameService.checkFinish(roomId, client.id);
 
       if (finishTime !== null) {
         this.rankingService.save(player.id, finishTime, player.name);
         client.emit('playerFinished', { time: finishTime });
-        this.server.emit('rankingUpdate', this.rankingService.getTop(10));
+        this.server.to(roomId).emit('rankingUpdate', this.rankingService.getTop(10));
       }
 
-      this.server.emit('state', this.gameService.getGameState())
+      this.server.to(roomId).emit('state', this.gameService.getGameState(roomId))
 
     }
 
     @SubscribeMessage('restart')
     handleRestart(@ConnectedSocket() client: Socket){
-      this.gameService.restartPlayer(client.id)
-      this.server.emit('state', this.gameService.getGameState());
+      const roomId = client.data.roomId;
+      if (!roomId) return;
+
+      this.gameService.restartPlayer(roomId, client.id)
+      this.server.to(roomId).emit('state', this.gameService.getGameState(roomId));
     }
 
     @SubscribeMessage('restartGame')
-    handleRestartGame(){
-      this.gameService.resetGame()
-      this.server.emit('state', this.gameService.getGameState())
+    handleRestartGame(@ConnectedSocket() client: Socket){
+      const roomId = client.data.roomId;
+      if (!roomId) return;
+
+      this.gameService.resetGame(roomId)
+      this.server.to(roomId).emit('state', this.gameService.getGameState(roomId))
     }
 
     @SubscribeMessage('jump')
     handleJump(@ConnectedSocket() client: Socket){
-      this.gameService.jumpPlayer(client.id)
-      this.server.emit('state', this.gameService.getGameState())
+      const roomId = client.data.roomId;
+      if (!roomId) return;
+
+      this.gameService.jumpPlayer(roomId, client.id)
+      this.server.to(roomId).emit('state', this.gameService.getGameState(roomId))
     }
 
     @WebSocketServer() server: Server;
     onModuleInit() { //loop de atualização do jogo
         setInterval(() => {
-        this.gameService.updatePhysics();
-        this.server.emit('state', this.gameService.getGameState());
+          for(const roomId in this.gameService['games']){
+            this.gameService.updatePhysics(roomId);
+            this.server.to(roomId).emit('state', this.gameService.getGameState(roomId));
+          }
       }, 1000 / 60); // 60 FPS
     }
 }
