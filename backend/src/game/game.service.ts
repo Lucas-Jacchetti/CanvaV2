@@ -13,19 +13,46 @@ export class GameService {
         GROUND_Y: 490
     };
 
-    private state: GameState = {
-        players: {},
-        obstacles: [
-            { id: 'obs1', x: 100, y: 100, width: 100, height: 20 },
-            { id: 'obs2', x: 250, y: 200, width: 100, height: 20 },
-            { id: 'obs3', x: 150, y: 300, width: 100, height: 20 },
-            { id: 'obs4', x: 150, y: 450, width: 100, height: 20 },
-            { id: 'obs5', x: 150, y: 480, width: 100, height: 20 },
-            { id: 'obs6', x: 75, y: 375, width: 100, height: 20 },
-        ]
-    };
+    // private state: GameState = {
+    //     players: {},
+    //     obstacles: [
+    //         { id: 'obs1', x: 100, y: 100, width: 100, height: 20 },
+    //         { id: 'obs2', x: 250, y: 200, width: 100, height: 20 },
+    //         { id: 'obs3', x: 150, y: 300, width: 100, height: 20 },
+    //         { id: 'obs4', x: 150, y: 450, width: 100, height: 20 },
+    //         { id: 'obs5', x: 150, y: 480, width: 100, height: 20 },
+    //         { id: 'obs6', x: 75, y: 375, width: 100, height: 20 },
+    //     ]
+    // };
 
-    addPlayer(id: string, name: string) {
+    private games: {[roomId: string]: GameState} =  {};
+
+    createGame(roomId: string, name: string, playerId: string){
+        this.games[roomId] = {
+            players: {
+                [playerId]: {
+                    id: playerId,
+                    name,
+                    x: 200,
+                    y: 350,
+                    vy: 0,
+                    vx: 0,
+                    isJumping: false,
+                    startTime: Date.now(),
+                    finished: false
+                }
+            },
+            obstacles: [
+                { id: 'obs1', x: 100, y: 100, width: 100, height: 20 },
+                { id: 'obs2', x: 250, y: 200, width: 100, height: 20 },
+                { id: 'obs3', x: 150, y: 300, width: 100, height: 20 },
+                { id: 'obs4', x: 150, y: 450, width: 100, height: 20 },
+                { id: 'obs5', x: 150, y: 480, width: 100, height: 20 },
+            ]
+        }
+    }
+
+    addPlayer(roomId: string, id: string, name: string) {
         const newPlayer: Player = {
             id,
             name,
@@ -37,21 +64,28 @@ export class GameService {
             startTime: Date.now(),
             finished: false
         };
-        this.state.players[id] = newPlayer;
+        this.games[roomId].players[id] = newPlayer;
     }
 
-    getPlayer(id: string): Player {
-        const player = this.state.players[id];
+    getPlayer(roomId: string, id: string): Player {
+        const player = this.games[roomId]?.players[id];
         if (!player) throw new Error(`Player ${id} not found`);
         return player;
     }
 
-    removePlayer(id: string) {
-        delete this.state.players[id];
+    removePlayer(roomId: string, id: string) {
+        const room = this.games[roomId];
+        if (!room) return;
+
+        delete room.players[id];
+
+        if(Object.keys(room.players).length === 0){
+            delete this.games[roomId]
+        }
     }
 
-    restartPlayer(id: string) {
-        const player = this.state.players[id];
+    restartPlayer(roomId: string, id: string) {
+        const player = this.games[roomId]?.players[id];
         if (!player) return;
 
         player.x = 200;
@@ -64,8 +98,11 @@ export class GameService {
         player.finishTime = undefined;
     }
 
-    updatePhysics() {
-        for (const player of Object.values(this.state.players)) {
+    updatePhysics(roomId: string) {
+        const game = this.games[roomId];
+        if (!game) return;
+        
+        for (const player of Object.values(this.games[roomId].players)) {
             if (!player.isJumping){
                 this.applyGravity(player);
             }
@@ -75,12 +112,12 @@ export class GameService {
             const nextY = player.y + player.vy;
             const nextX = player.x + player.vx;
                 
-            const xCollided = this.detectHorizontalCollision(player, nextX);
+            const xCollided = this.detectHorizontalCollision(game, player, nextX);
             if (!xCollided) player.x = nextX;
 
             if (this.detectGroundCollision(player, nextY)) continue;
 
-            const yCollided = this.detectVerticalCollision(player, nextY);
+            const yCollided = this.detectVerticalCollision(game, player, nextY);
             if (!yCollided) player.y = nextY;
         }
     }
@@ -104,9 +141,9 @@ export class GameService {
         return false;
     }
 
-    private detectHorizontalCollision(player: Player, nextX: number): boolean {
+    private detectHorizontalCollision(game: GameState, player: Player, nextX: number): boolean {
         const r = this.PHYSICS.PLAYER_RADIUS;
-        for (const obs of this.state.obstacles) {
+        for (const obs of game.obstacles) {
             const withinY = player.y + r >= obs.y && player.y - r <= obs.y + obs.height;
 
             if (player.vx > 0 && player.x + r <= obs.x && nextX + r >= obs.x && withinY) {
@@ -123,9 +160,9 @@ export class GameService {
         return false;
     }
 
-    private detectVerticalCollision(player: Player, nextY: number): boolean {
+    private detectVerticalCollision(game: GameState, player: Player, nextY: number): boolean {
         const r = this.PHYSICS.PLAYER_RADIUS;
-        for (const obs of this.state.obstacles) {
+        for (const obs of game.obstacles) {
             const withinX = player.x + r >= obs.x && player.x - r <= obs.x + obs.width;
 
             if (player.vy > 0 && player.y + r <= obs.y && nextY + r >= obs.y && withinX) {
@@ -143,24 +180,24 @@ export class GameService {
         return false;
     }
 
-    jumpPlayer(id: string) {
-        const player = this.state.players[id];
+    jumpPlayer(roomId: string, id: string) {
+        const player = this.games[roomId]?.players[id];
         if (!player || player.isJumping) return;
 
         player.vy = this.PHYSICS.JUMP_FORCE;
         player.isJumping = true;
     }
 
-    movePlayer(id: string, data: { x: number, y: number }) {
-        const player = this.state.players[id];
+    movePlayer(roomId: string, id: string, data: { x: number, y: number }) {
+        const player = this.games[roomId]?.players[id];
         if (!player) return;
 
         player.vx = data.x * this.PHYSICS.MOVE_SPEED;   
         
     }   
 
-    checkFinish(id: string): number | null {
-        const player = this.state.players[id];
+    checkFinish(roomId: string, id: string): number | null {
+        const player = this.games[roomId]?.players[id];
         if (!player || player.finished) return null;
 
         if (player.y <= 8) {
@@ -173,13 +210,16 @@ export class GameService {
         return null;
     }
 
-    resetGame() {
-        for (const id in this.state.players) {
-            this.restartPlayer(id);
+    resetGame(roomId: string) {
+        const game = this.games[roomId];
+        if (!game) return;
+
+        for (const id in game.players) {
+            this.restartPlayer(roomId, id);
         }
     }
 
-    getGameState() {
-        return this.state;
+    getGameState(roomId: string) : GameState | null{
+        return this.games[roomId] ?? null;
     }
 }
