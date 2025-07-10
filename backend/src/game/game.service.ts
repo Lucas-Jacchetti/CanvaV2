@@ -163,10 +163,14 @@ export class GameService {
         const player = this.state.players[id];
         if (!player || player.finished) return null;
 
-        player.finished = true;
-        const time = Date.now() - player.startTime;
-        player.finishTime = time;
-        return time;
+        if (player.y <= 8) {
+            player.finished = true;
+            const time = Date.now() - player.startTime;
+            player.finishTime = time;
+            return time;
+
+        }
+        return null;
     }
 
     resetGame() {
