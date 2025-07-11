@@ -18,6 +18,8 @@ function GamePage(){
         resetGame,
         playerName,
         startTime,
+        countDown,
+        canMove,
     } = useSocket(storedName);
 
     useControls({move, jump});
@@ -25,24 +27,30 @@ function GamePage(){
     const [liveTime, setLiveTime] = useState(0);
 
     useEffect(() => {
-        if (!finishTime && startTime) {
+        if (canMove && !finishTime && startTime) {
             const interval = setInterval(() => {
             setLiveTime(Date.now() - startTime);
-            }, 100);
+            }, 10);
             return () => clearInterval(interval);
         }
-    }, [finishTime, startTime]);
+    }, [canMove, finishTime, startTime]);
 
     return(
         <>
         <div className="flex flex-row justify-center gap-4 p-4 bg-gray-900 text-white min-h-screen">
 
             <div className="text-center text-white mb-4">
-            <h1 className="text-2xl font-bold">Jogador: {playerName}</h1>
+                <h1 className="text-2xl font-bold">Jogador: {playerName}</h1>
 
-            {!finishTime && <p>⏱️ Tempo: {(liveTime / 1000).toFixed(1)}s</p>}
-            {finishTime && <p className="text-green-400">🎉 Você terminou em {(finishTime / 1000).toFixed(2)}s!</p>}
-            </div>
+                {!finishTime && <p>⏱️ Tempo: {(liveTime / 1000).toFixed(1)}s</p>}
+                {finishTime && <p className="text-green-400">🎉 Você terminou em {(finishTime / 1000).toFixed(3)}s!</p>}
+            
+                {countDown !== null && (
+                    <div className="text-4xl font-bold text-yellow-400 animate-pulse">
+                        {countDown === 0 ? "GO!" : countDown}
+                    </div>
+                )}
+            </div> 
 
             <div className="flex flex-col justify-center items-center gap-3">
                 <h1 className="text-3xl font-bold">Parkour Game</h1>
@@ -57,7 +65,6 @@ function GamePage(){
                     Resetar Partida
                     </button>
                 </div>
-
                 
             </div>
             <div className="flex flex-col ml-7">

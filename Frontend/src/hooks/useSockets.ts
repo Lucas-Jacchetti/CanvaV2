@@ -10,21 +10,24 @@ export function useSocket(name: string){
     const [finishTime, setFinishTime] = useState< number | null >(null);
     const [playerName, setPlayerName] = useState<string>(""); 
     const [startTime, setStartTime] = useState<number>(Date.now()); 
+    const [countDown, setCountDown] = useState<number | null>(null);
+    const [canMove, setCanMove] = useState(false);
 
     useEffect(() => {
         const socket = io("http://localhost:3000");
         socketRef.current = socket;
 
         const waitForSocketId = () => {
-        if (socket.id) {
-            console.log("Emitindo join com roomId:", socket.id);
-            setPlayerId(socket.id);
-            setPlayerName(name);
-            socket.emit("join", { name, roomId: socket.id });
-        } else {
-            setTimeout(waitForSocketId, 10); // tenta novamente em 10ms
-        }
-    };
+            if (socket.id) {
+                console.log("Emitindo join com roomId:", socket.id);
+                setPlayerId(socket.id);
+                setPlayerName(name);
+                socket.emit("join", { name, roomId: socket.id });
+                socket.emit("startGame");
+            } else {
+                setTimeout(waitForSocketId, 10); // tenta novamente em 10ms
+            }
+        };
 
         socket.on("connect", () => {
             console.log("Connected! Esperando socket.id...");
@@ -37,12 +40,6 @@ export function useSocket(name: string){
                 return; // Mantém o estado anterior se receber null
             }
             setGameState(prev => ({ ...prev, ...state })); // Merge com estado anterior
-
-            // if (playerId && state.players[playerId]) {
-            //     const serverStartTime = state.players[playerId].startTime;
-            //     setStartTime(serverStartTime);
-            //     console.log("Server startTime: ", serverStartTime)
-            // } else console.log("Not entered")
         });
 
             // Adicione também para o evento 'init':
@@ -62,30 +59,47 @@ export function useSocket(name: string){
         socket.on("playerFinished", ({time}: { time: number }) => {
             setFinishTime(Number(time));
         })
+        
+        socket.on("start", ({ startTime }: { startTime: number }) => {
+            const now = Date.now();
+            const diff = startTime - now;
+            const count = Math.ceil(diff / 1000);
 
-        return () => {
+            if (count > 0) {
+                setCanMove(false);
+                setCountDown(count);
+                const interval = setInterval(() => {
+                    const newDiff = startTime - Date.now();
+                    if (newDiff <= 0) {
+                        clearInterval(interval);
+                        setCountDown(null);
+                        setCanMove(true);
+                        setStartTime(startTime); // ⏱️ cronômetro começa com tempo exato
+                    } else {
+                        setCountDown(Math.ceil(newDiff / 1000));
+                    }
+                }, 250);
+            } else {
+                setCountDown(null);
+                setCanMove(true);
+                setStartTime(startTime);
+            }
+        });
+
+        return () => {  
             socket.disconnect();
         };
     }, [name]);
 
-    useEffect(() => {
-    if (playerId && gameState?.players?.[playerId]) {
-        const serverStartTime = gameState.players[playerId].startTime;
-
-        // Só atualiza se for diferente do atual
-        if (serverStartTime !== startTime) {
-            setStartTime(serverStartTime);
-            // setFinishTime(null); // limpa finishTime ao reiniciar
-            console.log("⏱️ Novo startTime vindo do servidor:", serverStartTime);
-        }
-    }
-}, [gameState, playerId, startTime]);
+    
 
     const move = (x: number, y: number) => {        //envia ações do jogador (.emit)   
+        if (!canMove) return;
         socketRef.current?.emit("move", { x, y });
     };
 
     const jump = () => {
+        if (!canMove) return;
         socketRef.current?.emit("jump");
     }
 
@@ -95,6 +109,7 @@ export function useSocket(name: string){
 
     const resetGame = () => {
         socketRef.current?.emit("restartGame");
+        socketRef.current?.emit("startGame"); // reinicia contagem
         setFinishTime(null);
     }
 
@@ -108,6 +123,8 @@ export function useSocket(name: string){
         restart,
         resetGame,
         playerName,    
-        startTime
+        startTime,
+        countDown,
+        canMove,
     };
 }

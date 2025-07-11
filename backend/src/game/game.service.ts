@@ -54,6 +54,7 @@ export class GameService {
             finished: false
         };
         this.games[roomId].players[id] = newPlayer;
+        console.log(`[GameService] ✅ Jogador adicionado: ${id} na sala ${roomId}`);
     }
 
     getPlayer(roomId: string, id: string): Player {
@@ -206,6 +207,22 @@ export class GameService {
         for (const id in game.players) {
             this.restartPlayer(roomId, id);
         }
+    }
+
+    setPlayerStartTime(roomId: string, playerId: string, startTime: number): void {
+        const game = this.games[roomId];
+
+        if (!game) {
+            console.warn(`[GameService] Sala não encontrada: ${roomId}`);
+            return;
+        }
+
+        if (!game.players || !game.players[playerId]) {
+            console.warn(`[GameService] Jogador ${playerId} não encontrado na sala ${roomId}`);
+            return;
+        }
+
+        game.players[playerId].startTime = startTime;
     }
 
     getGameState(roomId: string) : GameState | null{

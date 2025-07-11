@@ -62,6 +62,24 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       client.to(roomId).emit('playerLeft', client.id); 
     }
 
+    @SubscribeMessage('startGame')
+    handleStartGame(@ConnectedSocket() client: Socket) {
+      const roomId = client.data.roomId;
+      const playerId = client.id;   
+      if (!roomId) {
+        this.logger.warn(`[GameGateway] Sala ausente para cliente ${playerId}`);
+        return;
+      }
+
+      const startTime = Date.now() + 3000;
+
+      // Atualize o jogador com esse startTime
+      this.gameService.setPlayerStartTime(roomId, client.id, startTime);
+
+      // Envia para todos da sala
+      this.server.to(roomId).emit('start', { startTime });
+    }
+
     @SubscribeMessage('move')
     handleMove(
       @ConnectedSocket() client: Socket,
