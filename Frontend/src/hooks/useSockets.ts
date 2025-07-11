@@ -1,9 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import type { GameState, RankingEntry } from "../types";
-//ranking
-//playerId
-//finishTime
+
 export function useSocket(name: string){
     const socketRef = useRef<Socket | null>(null);
     const [gameState, setGameState] = useState< GameState | null>(null); 
@@ -22,17 +20,16 @@ export function useSocket(name: string){
             console.log("Emitindo join com roomId:", socket.id);
             setPlayerId(socket.id);
             setPlayerName(name);
-            setStartTime(Date.now());
             socket.emit("join", { name, roomId: socket.id });
         } else {
             setTimeout(waitForSocketId, 10); // tenta novamente em 10ms
         }
     };
 
-    socket.on("connect", () => {
-        console.log("Connected! Esperando socket.id...");
-        waitForSocketId(); // chama o emissor confiável
-    });
+        socket.on("connect", () => {
+            console.log("Connected! Esperando socket.id...");
+            waitForSocketId(); // chama o emissor confiável
+        });
 
         socket.on("state", (state: GameState) => {
             if (!state) {
@@ -40,6 +37,12 @@ export function useSocket(name: string){
                 return; // Mantém o estado anterior se receber null
             }
             setGameState(prev => ({ ...prev, ...state })); // Merge com estado anterior
+
+            // if (playerId && state.players[playerId]) {
+            //     const serverStartTime = state.players[playerId].startTime;
+            //     setStartTime(serverStartTime);
+            //     console.log("Server startTime: ", serverStartTime)
+            // } else console.log("Not entered")
         });
 
             // Adicione também para o evento 'init':
@@ -65,6 +68,19 @@ export function useSocket(name: string){
         };
     }, [name]);
 
+    useEffect(() => {
+    if (playerId && gameState?.players?.[playerId]) {
+        const serverStartTime = gameState.players[playerId].startTime;
+
+        // Só atualiza se for diferente do atual
+        if (serverStartTime !== startTime) {
+            setStartTime(serverStartTime);
+            // setFinishTime(null); // limpa finishTime ao reiniciar
+            console.log("⏱️ Novo startTime vindo do servidor:", serverStartTime);
+        }
+    }
+}, [gameState, playerId, startTime]);
+
     const move = (x: number, y: number) => {        //envia ações do jogador (.emit)   
         socketRef.current?.emit("move", { x, y });
     };
@@ -79,6 +95,7 @@ export function useSocket(name: string){
 
     const resetGame = () => {
         socketRef.current?.emit("restartGame");
+        setFinishTime(null);
     }
 
     return {
@@ -90,7 +107,7 @@ export function useSocket(name: string){
         jump,
         restart,
         resetGame,
-        playerName,    // <-- exporta o nome
+        playerName,    
         startTime
     };
 }

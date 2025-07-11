@@ -78,7 +78,7 @@ export class GameService {
         if (!player) return;
 
         player.x = 200;
-        player.y = 450;
+        player.y = 350;
         player.vy = 0;
         player.vx = 0;
         player.isJumping = false;

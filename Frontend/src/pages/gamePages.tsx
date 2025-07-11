@@ -15,7 +15,6 @@ function GamePage(){
         ranking,
         move,
         jump,
-        // restart,
         resetGame,
         playerName,
         startTime,
@@ -29,7 +28,7 @@ function GamePage(){
         if (!finishTime && startTime) {
             const interval = setInterval(() => {
             setLiveTime(Date.now() - startTime);
-            }, 1000);
+            }, 100);
             return () => clearInterval(interval);
         }
     }, [finishTime, startTime]);
@@ -51,7 +50,6 @@ function GamePage(){
                 <Canvas gameState={gameState} playerId={playerId}/>
 
                 <div className="flex gap-4 mt-2">
-                    
                     <button
                     className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded cursor-pointer"
                     onClick={resetGame}
