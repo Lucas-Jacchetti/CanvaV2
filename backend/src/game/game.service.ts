@@ -109,6 +109,7 @@ export class GameService {
 
             const yCollided = this.detectVerticalCollision(game, player, nextY);
             if (!yCollided) player.y = nextY;
+            
         }
     }
 
@@ -186,18 +187,17 @@ export class GameService {
         
     }   
 
-    checkFinish(roomId: string, id: string): number | null {
+    checkFinish(roomId: string, id: string): boolean {
         const player = this.games[roomId]?.players[id];
-        if (!player || player.finished) return null;
+        if (!player || player.finished) return false;
 
         if (player.y <= 8) {
             player.finished = true;
             const time = Date.now() - player.startTime;
             player.finishTime = time;
-            return time;
-
+            return true;
         }
-        return null;
+        return false;
     }
 
     resetGame(roomId: string) {

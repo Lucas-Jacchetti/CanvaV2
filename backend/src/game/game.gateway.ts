@@ -59,8 +59,6 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     handleDisconnect(@ConnectedSocket() client: Socket) { //gerencia a saidaa de um novo jogador
       const roomId = client.data.roomId;
       if (!roomId) return;
-
-
       this.gameService.removePlayer(roomId, client.id); // remove jogador
       client.to(roomId).emit('playerLeft', client.id); 
     }
@@ -73,12 +71,9 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         this.logger.warn(`[GameGateway] Sala ausente para cliente ${playerId}`);
         return;
       }
-
       const startTime = Date.now() + 3000;
-
       // Atualize o jogador com esse startTime
       this.gameService.setPlayerStartTime(roomId, client.id, startTime);
-
       // Envia para todos da sala
       this.server.to(roomId).emit('start', { startTime });
     }
@@ -97,15 +92,15 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       if (!roomId) return;
       this.gameService.movePlayer(roomId, client.id, data);
 
-      const player = this.gameService.getPlayer(roomId, client.id);
-      const finishTime = this.gameService.checkFinish(roomId, client.id);
+      // const player = this.gameService.getPlayer(roomId, client.id);
+      // const finishTime = this.gameService.checkFinish(roomId, client.id);
 
-      if (finishTime !== null) {
-        await this.rankingService.save(player.id, finishTime, player.name);
-        client.emit('playerFinished', { time: finishTime });
+      // if (finishTime !== null) {
+      //   await this.rankingService.save(player.id, finishTime, player.name);
+      //   client.emit('playerFinished', { time: finishTime });
 
-        await this.emitRankingUpdate(roomId);
-      }
+      //   await this.emitRankingUpdate(roomId);
+      // }
 
       this.server.to(roomId).emit('state', this.gameService.getGameState(roomId))
 
@@ -139,12 +134,25 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     }
 
     @WebSocketServer() server: Server;
-    onModuleInit() { //loop de atualização do jogo
-        setInterval(() => {
-          for(const roomId in this.gameService['games']){
-            this.gameService.updatePhysics(roomId);
-            this.server.to(roomId).emit('state', this.gameService.getGameState(roomId));
+    onModuleInit() {
+      setInterval(async () => {
+        for (const roomId in this.gameService['games']) {
+          this.gameService.updatePhysics(roomId);
+          this.server.to(roomId).emit('state', this.gameService.getGameState(roomId));
+
+          // 🔍 verificar jogadores finalizados
+          for (const [playerId, player] of Object.entries(this.gameService.getGameState(roomId)?.players || {})) {
+            const finished = this.gameService.checkFinish(roomId, playerId);
+            if (finished) {
+              const time = player.finishTime!;
+              this.server.to(playerId).emit('playerFinished', { time });
+
+              await this.rankingService.save(playerId, time, player.name);
+              const topRanking = await this.rankingService.getTop(10);
+              this.server.to(roomId).emit('rankingUpdate', topRanking);
+            }
           }
-      }, 1000 / 60); // 60 FPS
+        }
+      }, 1000 / 60);
     }
 }
