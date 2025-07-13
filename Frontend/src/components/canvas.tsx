@@ -4,7 +4,7 @@ import type { GameState } from "../types";
 type CanvasProps = {
     gameState: GameState | null;
     playerId: string | null;
-    className?: string; // <- para aceitar `className` de fora
+    className?: string; 
 };
 
 export function Canvas({ gameState, playerId, className = "" }: CanvasProps) {

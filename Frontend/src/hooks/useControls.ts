@@ -3,9 +3,11 @@ import { useEffect, useRef } from "react";
 export function useControls({
     move,
     jump,
+    resetGame
 }: {
     move: (x: number, y: number) => void;
     jump: () => void;
+    resetGame: () => void;
 }) {
     const keysPressed = useRef<Set<string>>(new Set());
 
@@ -37,9 +39,12 @@ export function useControls({
             if (keysPressed.current.has(" ")) {
                 jump()
             }
+            if (keysPressed.current.has("Enter")) {
+                resetGame()
+            }
 
         };
 
         loop();
-    }, [move, jump])
+    }, [move, jump, resetGame])
 }
