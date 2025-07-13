@@ -7,7 +7,7 @@ function NamePage(){
 
     const handleStart = () => {
         if (!nickname.trim()) return;
-        localStorage.setItem("playername", nickname)
+        sessionStorage.setItem("playername", nickname)
         navigate("/game")
     }
 

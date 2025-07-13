@@ -5,7 +5,7 @@ import { useControls } from "../hooks/useControls";
 
 
 function GamePage(){
-    const storedName = localStorage.getItem("playername") || "Player;"
+    const storedName = sessionStorage.getItem("playername") || "Player;"
 
     const {
         gameState,
