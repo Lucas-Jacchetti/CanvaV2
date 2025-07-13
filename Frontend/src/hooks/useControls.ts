@@ -10,13 +10,21 @@ export function useControls({
     resetGame: () => void;
 }) {
     const keysPressed = useRef<Set<string>>(new Set());
+    const enterPressed = useRef(false);
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             keysPressed.current.add(e.key)
+            if (e.key === "Enter" && !enterPressed.current) {
+                enterPressed.current = true;
+                resetGame(); //só uma vez por pressionamento
+            }
         }
         const handleKeyUp = (e: KeyboardEvent) => {
             keysPressed.current.delete(e.key)
+            if (e.key === "Enter") {
+                enterPressed.current = false; // permite novo clique de Enter
+            }
         }
 
         window.addEventListener("keydown", handleKeyDown)
@@ -29,7 +37,7 @@ export function useControls({
     }, []);
 
     useEffect(() => {
-        const loop = () => {
+        const interval = setInterval(() =>{
             if (keysPressed.current.has("ArrowLeft")) {
                 move(-1, 0)
             }
@@ -39,12 +47,9 @@ export function useControls({
             if (keysPressed.current.has(" ")) {
                 jump()
             }
-            if (keysPressed.current.has("Enter")) {
-                resetGame()
-            }
-
-        };
-
-        loop();
-    }, [move, jump, resetGame])
+            
+            
+        })
+        return () => clearInterval(interval);
+    }, [move, jump])
 }
