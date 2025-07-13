@@ -62,15 +62,17 @@ function GamePage(){
 
                 {/* Fundo: Botões e Ranking */}
                 <div className="flex justify-between items-end">
-                <button
-                    onClick={(e) => {
-                        e.currentTarget.blur();
-                        resetGame();
-                    }}
-                    className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded pointer-events-auto cursor-pointer"
-                >
-                    Resetar Partida
-                </button>
+                {countDown === null &&
+                    <button
+                        onClick={(e) => {
+                            e.currentTarget.blur();
+                            resetGame();
+                        }}
+                        className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded pointer-events-auto cursor-pointer"
+                    >
+                        Resetar Partida
+                    </button>
+                }
 
                 {finishTime &&
                     <div className="bg-black/50 text-white p-3 rounded pointer-events-auto w-[250px]">

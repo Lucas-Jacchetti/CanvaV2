@@ -10,14 +10,20 @@ export function useControls({
     resetGame: () => void;
 }) {
     const keysPressed = useRef<Set<string>>(new Set());
-    const enterPressed = useRef(false);
+    const coolDownEnter = 3000;
+    const enterPressed = useRef<boolean>(false);
+    const lastEnterTime = useRef<number>(0);
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             keysPressed.current.add(e.key)
-            if (e.key === "Enter" && !enterPressed.current) {
-                enterPressed.current = true;
-                resetGame(); //só uma vez por pressionamento
+            if (e.key === "Enter") {
+                const now = Date.now();
+                if ((now - lastEnterTime.current) >= coolDownEnter) {
+                    enterPressed.current = true;
+                    lastEnterTime.current = now;
+                    resetGame();
+                }
             }
         }
         const handleKeyUp = (e: KeyboardEvent) => {
