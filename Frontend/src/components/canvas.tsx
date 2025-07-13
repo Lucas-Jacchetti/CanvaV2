@@ -1,70 +1,66 @@
-// src/components/Canvas.tsx
-import { useRef, useEffect } from "react";
-import { useGameLoop } from "../hooks/useGameloop";
+import { useEffect, useRef } from "react";
 import type { GameState } from "../types";
 
-interface CanvasProps {
+type CanvasProps = {
     gameState: GameState | null;
     playerId: string | null;
-}
+    className?: string; // <- para aceitar `className` de fora
+};
 
-export function Canvas({ gameState, playerId }: CanvasProps) {
-    const canvasRef = useRef<HTMLCanvasElement>(null);
-    const gameStateRef = useRef<GameState | null>(null);
-    const width = 400;
-    const height = 500;
+export function Canvas({ gameState, playerId, className = "" }: CanvasProps) {
+    const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-    // Atualiza a referência sempre que gameState mudar
     useEffect(() => {
-        gameStateRef.current = gameState;
-    }, [gameState]);
+        const canvas = canvasRef.current;
+        const context = canvas?.getContext("2d");
 
-    useGameLoop(() => {
-        const ctx = canvasRef.current?.getContext("2d");
-        const currentGameState = gameStateRef.current; // Acessa via ref
-        
-        if (!ctx) return;
+        if (!canvas || !context) return;
 
-        ctx.clearRect(0, 0, width, height);
+        const resizeCanvas = () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        };
 
-        if (!currentGameState) {
-            ctx.fillStyle = "black";
-            ctx.font = "16px Arial";
-            ctx.fillText("Carregando jogo...", width/2 - 80, height/2);
-            return;
+        resizeCanvas();
+        window.addEventListener("resize", resizeCanvas);
+        return () => window.removeEventListener("resize", resizeCanvas);
+    }, []);
+
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        const ctx = canvas?.getContext("2d");
+        if (!canvas || !ctx || !gameState) return;
+
+        const { players, obstacles } = gameState;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Desenha obstáculos
+        ctx.fillStyle = "#666";
+        for (const obs of obstacles) {
+            ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
         }
 
-        //linha de chegada
-        ctx.fillStyle = "green";
-        ctx.fillRect(0, 8, width, 10);
-
-        //renderização dos objetos
-        currentGameState.obstacles.forEach(obs => {
-            ctx.fillStyle = "red";
-            ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
-        });
-
-        //renderização jogadores
-        Object.entries(currentGameState.players).forEach(([id, player]) => {
-            ctx.fillStyle = id === playerId ? "blue" : "green";
+        // Desenha jogadores
+        for (const player of Object.values(players)) {
             ctx.beginPath();
             ctx.arc(player.x, player.y, 10, 0, Math.PI * 2);
+            ctx.fillStyle = player.id === playerId ? "#4ade80" : "#3b82f6"; // verde ou azul
             ctx.fill();
-            
-            if (player.name) {
-                ctx.fillStyle = "black";
-                ctx.font = "10px Arial";
-                ctx.fillText(player.name, player.x - 15, player.y - 15);
-            }
-        });
-    });
+            ctx.closePath();
+
+            // Nome acima do jogador
+            ctx.fillStyle = "#fff";
+            ctx.font = "12px Arial";
+            ctx.textAlign = "center";
+            ctx.fillText(player.name, player.x, player.y - 15);
+        }
+    }, [gameState, playerId]);
 
     return (
         <canvas
-            ref={canvasRef}
-            width={width}
-            height={height}
-            className="rounded-2xl mx-auto block bg-white"
+        ref={canvasRef}
+        className={`absolute inset-0 w-full h-full z-0 ${className}`}
         />
     );
 }
