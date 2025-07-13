@@ -5,7 +5,7 @@ import { RankingService } from './ranking.service';
 export class RankingContoller{
     constructor (private readonly rankingService: RankingService) {}
 
-    @Get()
+    @Get('topten')
     async getRanking(@Query('limit') limit?: string){ //opção de passar um limite de jogadores do ranking
         const parsedLimit = parseInt(limit || '10', 10); //como limit vem como string, converte para int, para então ser passado na função getTop(limit), e se nada for dado, usa 10
         return await this.rankingService.getTop(parsedLimit);
@@ -16,7 +16,7 @@ export class RankingContoller{
         return await this.rankingService.getAll();
     }
 
-    @Get()
+    @Get(':id')
     async getById(@Param('id') id: string){
         return await this.rankingService.getById(id)
     }

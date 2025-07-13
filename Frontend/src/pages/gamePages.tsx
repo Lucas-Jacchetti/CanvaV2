@@ -5,7 +5,6 @@ import { useControls } from "../hooks/useControls";
 
 
 function GamePage(){
-    
     const storedName = localStorage.getItem("playername") || "Player;"
 
     const {
@@ -34,6 +33,7 @@ function GamePage(){
             return () => clearInterval(interval);
         }
     }, [canMove, finishTime, startTime]);
+
 
     return(
         <>
@@ -70,16 +70,16 @@ function GamePage(){
             <div className="flex flex-col ml-7">
                 <h2 className="text-xl font-semibold mb-2">🏁 Ranking</h2>
                 <ul className="space-y-1">
-                    {Array.isArray(ranking) && ranking.length > 0 ? (
-                    ranking.map((entry, index) => (
-                        <li key={entry.playerId || `ranking-${index}`}>
-                        #{index + 1} - {entry.playerName}: {(entry.time / 1000).toFixed(2)}s
-                        </li>
-                    ))
+                    {ranking.length > 0 ? (
+                        ranking.map((entry, index) => (
+                            <li key={`ranking-${index}-${entry.playerName}-${entry.time}`}>
+                                #{index + 1} - {entry.playerName}: {(entry.time / 1000).toFixed(3)}s
+                            </li>
+                        ))
                     ) : (
-                    <li>Nenhum registro no ranking ainda</li>
+                        <li>Nenhum registro no ranking ainda</li>
                     )}
-                </ul>       
+                </ul>     
             </div>
         </div>
 

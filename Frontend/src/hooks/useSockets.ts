@@ -37,12 +37,11 @@ export function useSocket(name: string){
         socket.on("state", (state: GameState) => {
             if (!state) {
                 console.warn("Received null state, keeping previous state");
-                return; // Mantém o estado anterior se receber null
+                return; // mantém o estado anterior se receber null
             }
             setGameState(prev => ({ ...prev, ...state })); // Merge com estado anterior
         });
 
-            // Adicione também para o evento 'init':
         socket.on("init", (initialState: GameState) => {
             if (!initialState) {
                 console.error("Received null initial state");
@@ -59,11 +58,11 @@ export function useSocket(name: string){
         socket.on("playerFinished", ({time}: { time: number }) => {
             setFinishTime(Number(time));
         })
-        
+
         socket.on("start", ({ startTime }: { startTime: number }) => {
             const now = Date.now();
             const diff = startTime - now;
-            const count = Math.ceil(diff / 1000);
+            const count = Math.ceil(diff / 1000); //arredondar
 
             if (count > 0) {
                 setCanMove(false);
@@ -74,7 +73,7 @@ export function useSocket(name: string){
                         clearInterval(interval);
                         setCountDown(null);
                         setCanMove(true);
-                        setStartTime(startTime); // ⏱️ cronômetro começa com tempo exato
+                        setStartTime(startTime); 
                     } else {
                         setCountDown(Math.ceil(newDiff / 1000));
                     }

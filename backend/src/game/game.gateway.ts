@@ -28,7 +28,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     }
 
     @SubscribeMessage('join')
-    handleJoin(@ConnectedSocket() client: Socket, @MessageBody() data: { name?: string, roomId?: string}) { //gerencia a conexãod de um novo jogador
+    async handleJoin(@ConnectedSocket() client: Socket, @MessageBody() data: { name?: string, roomId?: string}) { //gerencia a conexãod de um novo jogador
       if (!data?.roomId) {
         this.logger.error(`roomId ausente na conexão de ${client.id}`);
         client.disconnect();
@@ -50,6 +50,9 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
       client.emit('init', this.gameService.getGameState(roomId)); // envia estado atual para ele
       client.to(roomId).emit('newPlayer', { id: client.id }); // avisa aos outros que um novo jogador entrou
+
+      const topRanking = await this.rankingService.getTop(10);
+      client.emit('rankingUpdate', topRanking);
     }
 
     @SubscribeMessage('disconnect')
@@ -80,8 +83,13 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       this.server.to(roomId).emit('start', { startTime });
     }
 
+    private async emitRankingUpdate(roomId: string) {
+      const topRanking = await this.rankingService.getTop(10);
+      this.server.to(roomId).emit('rankingUpdate', topRanking);
+    }
+
     @SubscribeMessage('move')
-    handleMove(
+    async handleMove(
       @ConnectedSocket() client: Socket,
       @MessageBody() data: { x: number, y: number }
     ){
@@ -93,9 +101,10 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       const finishTime = this.gameService.checkFinish(roomId, client.id);
 
       if (finishTime !== null) {
-        this.rankingService.save(player.id, finishTime, player.name);
+        await this.rankingService.save(player.id, finishTime, player.name);
         client.emit('playerFinished', { time: finishTime });
-        this.server.to(roomId).emit('rankingUpdate', this.rankingService.getTop(10));
+
+        await this.emitRankingUpdate(roomId);
       }
 
       this.server.to(roomId).emit('state', this.gameService.getGameState(roomId))
