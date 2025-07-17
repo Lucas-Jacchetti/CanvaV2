@@ -50,6 +50,9 @@ export function useControls({
             if (keysPressed.current.has("ArrowRight")) {
                 move(1, 0)
             }
+            if (keysPressed.current.has("ArrowUp")) {
+                jump()
+            }
             if (keysPressed.current.has(" ")) {
                 jump()
             }

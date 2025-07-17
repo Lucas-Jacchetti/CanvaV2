@@ -6,11 +6,11 @@ import { GameState } from './types/game-state.type';
 export class GameService {
     private readonly PHYSICS = {
         GRAVITY: 1,
-        JUMP_FORCE: -15,
+        JUMP_FORCE: -13,
         MOVE_SPEED: 3,
         FRICTION: 0.9,
         PLAYER_RADIUS: 10,
-        GROUND_Y: 490
+        GROUND_Y: 5000
     };
 
     private games: {[roomId: string]: GameState} =  {};
@@ -21,7 +21,7 @@ export class GameService {
                 [playerId]: {
                     id: playerId,
                     name,
-                    x: 200,
+                    x: 80,
                     y: 350,
                     vy: 0,
                     vx: 0,
@@ -31,12 +31,26 @@ export class GameService {
                 }
             },
             obstacles: [
-                { id: 'obs1', x: 100, y: 100, width: 100, height: 20 },
-                { id: 'obs2', x: 250, y: 200, width: 100, height: 20 },
-                { id: 'obs3', x: 150, y: 300, width: 100, height: 20 },
-                { id: 'obs4', x: 150, y: 450, width: 100, height: 20 },
-                { id: 'obs5', x: 150, y: 480, width: 100, height: 20 },
-                { id: 'obs6', x: 75, y: 375, width: 100, height: 20 },
+                { id: 'obs1', x: 75, y: 570, width: 10, height: 10 }, //spawnpoint
+
+                { id: 'obs1', x: 8, y: 30, width: 25, height: 550 }, //primeira barra vertical
+                    { id: 'obs2', x: 33, y: 506, width: 15, height: 10 },
+                    { id: 'obs2', x: 33, y: 374, width: 15, height: 10 },
+                    { id: 'obs2', x: 33, y: 242, width: 15, height: 10 },
+                    { id: 'obs2', x: 33, y: 111, width: 20, height: 10 },
+
+                { id: 'obs3', x: 130, y: 70, width: 25, height: 510 }, //segunda barra vertical
+                    { id: 'obs2', x: 115, y: 440, width: 15, height: 10 },
+                    { id: 'obs2', x: 115, y: 308, width: 15, height: 10 },
+                    { id: 'obs2', x: 115, y: 176, width: 15, height: 10 },
+
+                { id: 'obs2', x: 170, y: 105, width: 800, height: 15 }, //barra horizontal de cima
+                { id: 'obs2', x: 170, y: 47, width: 15, height: 50 }, //barra horizontal de cima
+                
+                { id: 'obs2', x: 170, y: 30, width: 20, height: 10 }, 
+                
+
+
             ]
         }
     }
@@ -45,7 +59,7 @@ export class GameService {
         const newPlayer: Player = {
             id,
             name,
-            x: 200,
+            x: 80,
             y: 350,
             vy: 0,
             vx: 0,
@@ -78,7 +92,7 @@ export class GameService {
         const player = this.games[roomId]?.players[id];
         if (!player) return;
 
-        player.x = 200;
+        player.x = 80;
         player.y = 350;
         player.vy = 0;
         player.vx = 0;
@@ -191,7 +205,7 @@ export class GameService {
         const player = this.games[roomId]?.players[id];
         if (!player || player.finished) return false;
 
-        if (player.y <= 8) {
+        if (player.x >= 1300 && player.y < 600) {
             player.finished = true;
             const time = Date.now() - player.startTime;
             player.finishTime = time;

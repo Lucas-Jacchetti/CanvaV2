@@ -35,6 +35,8 @@ export function Canvas({ gameState, playerId, className = "" }: CanvasProps) {
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+        ctx.fillRect(1300, 0, 10, canvas.height)
+
         // Desenha obstáculos
         ctx.fillStyle = "#666";
         for (const obs of obstacles) {
