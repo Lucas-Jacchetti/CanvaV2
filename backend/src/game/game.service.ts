@@ -33,24 +33,107 @@ export class GameService {
             obstacles: [
                 { id: 'obs1', x: 75, y: 570, width: 10, height: 10 }, //spawnpoint
 
+                //fase 1
                 { id: 'obs1', x: 8, y: 30, width: 25, height: 550 }, //primeira barra vertical
                     { id: 'obs2', x: 33, y: 506, width: 15, height: 10 },
                     { id: 'obs2', x: 33, y: 374, width: 15, height: 10 },
                     { id: 'obs2', x: 33, y: 242, width: 15, height: 10 },
                     { id: 'obs2', x: 33, y: 111, width: 20, height: 10 },
 
-                { id: 'obs3', x: 130, y: 70, width: 25, height: 510 }, //segunda barra vertical
+                { id: 'obs3', x: 130, y: 180, width: 25, height: 402 }, //segunda barra vertical
                     { id: 'obs2', x: 115, y: 440, width: 15, height: 10 },
                     { id: 'obs2', x: 115, y: 308, width: 15, height: 10 },
-                    { id: 'obs2', x: 115, y: 176, width: 15, height: 10 },
+                    { id: 'obs3', x: 130, y: 70, width: 25, height: 10 }, //ultima plataforma de cima
 
-                { id: 'obs2', x: 170, y: 105, width: 800, height: 15 }, //barra horizontal de cima
-                { id: 'obs2', x: 170, y: 47, width: 15, height: 50 }, //barra horizontal de cima
+                { id: 'obs2', x: 115, y: 176, width: 810, height: 15 }, //barra horizontal maior de cima
                 
-                { id: 'obs2', x: 170, y: 30, width: 20, height: 10 }, 
-                
+                //fase 2
+                //plataformas parkour de cima
+                    { id: 'obs2', x: 175, y: 90, width: 20, height: 10 }, 
+                    { id: 'obs2', x: 245, y: 20, width: 20, height: 10 }, 
+
+                    { id: 'obs2', x: 290, y: 90, width: 20, height: 10 }, 
+                    { id: 'obs2', x: 360, y: 20, width: 20, height: 10 }, 
+
+                    { id: 'obs2', x: 405, y: 90, width: 20, height: 10 }, 
+                    { id: 'obs2', x: 475, y: 20, width: 20, height: 10 }, 
+
+                    { id: 'obs2', x: 510, y: 90, width: 20, height: 10 }, 
+                    { id: 'obs2', x: 580, y: 20, width: 20, height: 10 }, 
+
+                    { id: 'obs2', x: 625, y: 90, width: 20, height: 10 }, 
+                    { id: 'obs2', x: 695, y: 20, width: 20, height: 10 },
+
+                    { id: 'obs2', x: 740, y: 90, width: 20, height: 10 }, 
+                    { id: 'obs2', x: 810, y: 20, width: 20, height: 10 },
+
+                    { id: 'obs2', x: 855, y: 90, width: 20, height: 10 }, 
+                    { id: 'obs2', x: 925, y: 20, width: 20, height: 171 }, //barra vertical lateral direita 1
+
+                { id: 'obs2', x: 1050, y: 20, width: 20, height: 350 }, //barra vertical lateral direita 2
+                { id: 'obs2', x: 980, y: 330, width: 80, height: 10 }, //barra de apoio para fase 3
 
 
+                //fase 3
+                    //barra 1
+                        { id: 'obs2', x: 270, y: 230, width: 60, height: 7 },
+                        { id: 'obs2', x: 370, y: 230, width: 60, height: 7 },
+                        { id: 'obs2', x: 470, y: 230, width: 60, height: 7 },
+                        { id: 'obs2', x: 570, y: 230, width: 60, height: 7 },
+                        { id: 'obs2', x: 670, y: 230, width: 60, height: 7 },
+                        { id: 'obs2', x: 770, y: 230, width: 60, height: 7 },
+                        { id: 'obs2', x: 870, y: 230, width: 60, height: 7 },
+
+                        //impedimento vertical (direita para esquerda)
+                            { id: 'obs2', x: 770, y: 237, width: 10, height: 40 },
+                            { id: 'obs2', x: 470, y: 237, width: 10, height: 40 },
+                    
+                    //barra 2
+                        { id: 'obs2', x: 320, y: 270, width: 60, height: 7 },
+                        { id: 'obs2', x: 420, y: 270, width: 60, height: 7 },
+                        { id: 'obs2', x: 520, y: 270, width: 60, height: 7 },
+                        { id: 'obs2', x: 620, y: 270, width: 60, height: 7 },
+                        { id: 'obs2', x: 720, y: 270, width: 60, height: 7 },
+                        { id: 'obs2', x: 820, y: 270, width: 60, height: 7 },
+
+                        //impedimento vertical (direita para esquerda)
+                            { id: 'obs2', x: 620, y: 277, width: 10, height: 40 },
+                            { id: 'obs2', x: 320, y: 277, width: 10, height: 40 },
+                    
+                    //barra 3
+                        { id: 'obs2', x: 270, y: 310, width: 60, height: 7 },
+                        { id: 'obs2', x: 370, y: 310, width: 60, height: 7 },
+                        { id: 'obs2', x: 470, y: 310, width: 60, height: 7 },
+                        { id: 'obs2', x: 570, y: 310, width: 60, height: 7 },
+                        { id: 'obs2', x: 670, y: 310, width: 60, height: 7 },
+                        { id: 'obs2', x: 770, y: 310, width: 60, height: 7 },
+                        { id: 'obs2', x: 870, y: 310, width: 60, height: 7 },
+
+                        //impedimento vertical (direita para esquerda)
+                            { id: 'obs2', x: 820, y: 317, width: 10, height: 40 },
+                            { id: 'obs2', x: 520, y: 317, width: 10, height: 40 },
+                            { id: 'obs2', x: 320, y: 317, width: 10, height: 40 },
+                    
+                     //barra 4
+                        { id: 'obs2', x: 320, y: 350, width: 60, height: 7 },
+                        { id: 'obs2', x: 420, y: 350, width: 60, height: 7 },
+                        { id: 'obs2', x: 520, y: 350, width: 60, height: 7 },
+                        { id: 'obs2', x: 620, y: 350, width: 60, height: 7 },
+                        { id: 'obs2', x: 720, y: 350, width: 60, height: 7 },
+                        { id: 'obs2', x: 820, y: 350, width: 60, height: 7 },
+
+                        //impedimento vertical (direita para esquerda)
+                            { id: 'obs2', x: 720, y: 357, width: 10, height: 40 },
+                            { id: 'obs2', x: 420, y: 357, width: 10, height: 40 },
+                    
+                    //barra 5
+                        { id: 'obs2', x: 270, y: 390, width: 60, height: 7 },
+                        { id: 'obs2', x: 370, y: 390, width: 60, height: 7 },
+                        { id: 'obs2', x: 470, y: 390, width: 60, height: 7 },
+                        { id: 'obs2', x: 570, y: 390, width: 60, height: 7 },
+                        { id: 'obs2', x: 670, y: 390, width: 60, height: 7 },
+                        { id: 'obs2', x: 770, y: 390, width: 60, height: 7 },
+                        { id: 'obs2', x: 870, y: 390, width: 60, height: 7 },    
             ]
         }
     }
@@ -92,8 +175,8 @@ export class GameService {
         const player = this.games[roomId]?.players[id];
         if (!player) return;
 
-        player.x = 80;
-        player.y = 350;
+        player.x = 930;
+        player.y = 0;
         player.vy = 0;
         player.vx = 0;
         player.isJumping = false;
