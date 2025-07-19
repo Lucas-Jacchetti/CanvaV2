@@ -70,12 +70,11 @@ export class GameService {
                     { id: 'obs2', x: 855, y: 90, width: 20, height: 10 }, 
                     { id: 'obs2', x: 925, y: 20, width: 20, height: 171 }, //barra vertical lateral direita 1
 
-                { id: 'obs2', x: 1050, y: 20, width: 20, height: 457 }, //barra vertical lateral direita 2
+                { id: 'obs2', x: 1050, y: 20, width: 20, height: 466 }, //barra vertical lateral direita 2
                 { id: 'obs2', x: 1050, y: 560, width: 20, height: 530 }, //barra vertical lateral direita 2
 
                 { id: 'obs2', x: 980, y: 330, width: 80, height: 10 }, //barra de apoio para fase 3
                 { id: 'obs2', x: 980, y: 430, width: 80, height: 10 }, //barra de apoio para fase 3 (morte)
-
 
                 //fase 3
                     //barra 1
@@ -138,7 +137,7 @@ export class GameService {
                         { id: 'obs2', x: 770, y: 390, width: 60, height: 7 },
                         { id: 'obs2', x: 870, y: 390, width: 60, height: 7 },
                     
-                { id: 'obs2', x: 330, y: 476, width: 740, height: 10 }, //barra fina entre fase 3 e 4                  
+                { id: 'obs2', x: 330, y: 476, width: 730, height: 10 }, //barra fina entre fase 3 e 4                  
                 { id: 'obs2', x: 330, y: 390, width: 15, height: 86 }, //barra fina entre fase 3 e 4                  
                 { id: 'obs2', x: 155, y: 550, width: 50, height: 10 },  //barra de apoio para fase 4  
                 
@@ -156,6 +155,17 @@ export class GameService {
                     { id: 'obs2', x: 960, y: 580, width: 8, height: 300 },    
                     { id: 'obs2', x: 1010, y: 630, width: 4, height: 300 },    
 
+                //fase 5
+                    { id: 'obs2', x: 1120, y: 520, width: 20, height: 10 }, //apoio fase 5
+
+                    { id: 'obs2', x: 1070, y: 450, width: 20, height: 10 },
+                    { id: 'obs2', x: 1070, y: 375, width: 15, height: 10 },
+                    { id: 'obs2', x: 1070, y: 300, width: 15, height: 10 },
+                    { id: 'obs2', x: 1070, y: 225, width: 15, height: 10 },
+                    { id: 'obs2', x: 1070, y: 150, width: 15, height: 10 },
+
+                    { id: 'obs2', x: 1150, y: 100, width: 15, height: 10 }, //pre-chegada
+                    { id: 'obs2', x: 1230, y: 100, width: 15, height: 10 }, //pre-chegada
             ]
         }
     }
@@ -197,8 +207,8 @@ export class GameService {
         const player = this.games[roomId]?.players[id];
         if (!player) return;
 
-        player.x = 280;
-        player.y = 220;
+        player.x = 1060;
+        player.y = 550;
         player.vy = 0;
         player.vx = 0;
         player.isJumping = false;
