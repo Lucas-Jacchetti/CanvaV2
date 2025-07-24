@@ -207,7 +207,7 @@ export class GameService {
         const player = this.games[roomId]?.players[id];
         if (!player) return;
 
-        player.x = 1060;
+        player.x = 80;
         player.y = 550;
         player.vy = 0;
         player.vx = 0;
