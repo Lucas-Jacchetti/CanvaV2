@@ -5,17 +5,15 @@ import { IoAdapter } from '@nestjs/platform-socket.io';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   
-  // Configuração do CORS para HTTP
+  // Configuração do CORS
   app.enableCors({
     origin: '*',
     credentials: true
   });
 
-  // Obtenha a instância do servidor HTTP subjacente
-  const httpServer = app.getHttpServer();
-
-  // Configure o Socket.IO diretamente
-  const io = require('socket.io')(httpServer, {
+  // Configuração do WebSocket
+  const httpAdapter = app.getHttpAdapter();
+  const io = require('socket.io')(httpAdapter.getInstance(), {
     cors: {
       origin: '*',
       methods: ['GET', 'POST'],
@@ -24,7 +22,21 @@ async function bootstrap() {
     path: '/socket.io'
   });
 
-  await app.listen(process.env.PORT || 8080);
-  console.log(`Application is running on: ${await app.getUrl()}`);
+  // Tratamento de shutdown
+  const server = await app.listen(process.env.PORT || 8080, '0.0.0.0');
+  
+  // Keep-alive para o health check
+  setInterval(() => {
+    server.getConnections((err, count) => {
+      if (err) console.error('Health check error:', err);
+      else console.log(`Active connections: ${count}`);
+    });
+  }, 5000);
+
+  console.log(`App started on port ${process.env.PORT || 8080}`);
 }
-bootstrap();
+
+bootstrap().catch(err => {
+  console.error('Bootstrap error:', err);
+  process.exit(1);
+});
