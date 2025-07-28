@@ -15,7 +15,6 @@ import { RankingService } from "./ranking.service";
 
 @WebSocketGateway({
   namespace: '/',
-  path: '/socket.io',
   cors: {
     origin: '*',
     methods: ['GET', 'POST'],
@@ -23,6 +22,7 @@ import { RankingService } from "./ranking.service";
   }
 }) //escuta e responde a eventos de WebSocket
 export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect{ //interfaces para lidar com entrada e saida de jogadores
+  
   constructor(
     private gameService: GameService, private rankingService: RankingService) {}
 
