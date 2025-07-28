@@ -16,6 +16,10 @@ export function useSocket(name: string){
     useEffect(() => {
         const socket = io(import.meta.env.VITE_BACKEND_URL, {
             transports: ['websocket'],
+            path: '/socket.io', // Adicione esta linha
+            reconnection: true,
+            reconnectionAttempts: 5,
+            reconnectionDelay: 1000,
         });
         socketRef.current = socket;
 

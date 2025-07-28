@@ -1,0 +1,15 @@
+{
+  "build": {
+    "builder": "nixpacks",
+    "config": {
+      "startCmd": "npm run start:prod"
+    }
+  },
+  "deploy": {
+    "startCommand": "node dist/main.js",
+    "healthcheckPath": "/",
+    "healthcheckTimeout": 60,
+    "port": 8080,
+    "webSocketSupport": true
+  }
+}

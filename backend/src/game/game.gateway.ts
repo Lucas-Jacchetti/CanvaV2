@@ -13,7 +13,15 @@ import { Logger } from "@nestjs/common";
 import { GameService } from "./game.service";
 import { RankingService } from "./ranking.service";
 
-@WebSocketGateway({ cors: true }) //escuta e responde a eventos de WebSocket
+@WebSocketGateway({
+  namespace: '/',
+  path: '/socket.io',
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST'],
+    credentials: true
+  }
+}) //escuta e responde a eventos de WebSocket
 export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect{ //interfaces para lidar com entrada e saida de jogadores
   constructor(
     private gameService: GameService, private rankingService: RankingService) {}
