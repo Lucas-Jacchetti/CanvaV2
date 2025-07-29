@@ -77,6 +77,10 @@ export class GameService {
                 { id: 'obs2', x: 980, y: 430, width: 80, height: 10 }, //barra de apoio para fase 3 (morte)
 
                 //fase 3
+
+                    { id: 'obs2', x: 155, y: 200, width: 50, height: 10 },  //prevenção do bug
+                    { id: 'obs2', x: 195, y: 190, width: 10, height: 10 },  //prevenção do bug
+
                     //barra 1
                         { id: 'obs2', x: 270, y: 230, width: 60, height: 7 },
                         { id: 'obs2', x: 370, y: 230, width: 60, height: 7 },
