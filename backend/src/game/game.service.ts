@@ -4,7 +4,7 @@ import { GameState } from './types/game-state.type';
 
 @Injectable()
 export class GameService {
-    private readonly PHYSICS = {
+    private readonly PHYSICS = { //valores da fisica por praticidade 
         GRAVITY: 1,
         JUMP_FORCE: -13,
         MOVE_SPEED: 3,
@@ -15,7 +15,7 @@ export class GameService {
 
     private games: {[roomId: string]: GameState} =  {};
 
-    createGame(roomId: string, name: string, playerId: string){
+    createGame(roomId: string, name: string, playerId: string){ //jogo é criado com a posição do jogador e objetos
         this.games[roomId] = {
             players: {
                 [playerId]: {

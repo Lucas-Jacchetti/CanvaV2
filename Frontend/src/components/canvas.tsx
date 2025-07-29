@@ -37,13 +37,13 @@ export function Canvas({ gameState, playerId, className = "" }: CanvasProps) {
 
         ctx.fillRect(1300, 0, 10, canvas.height)
 
-        // Desenha obstáculos
+        // desenha obstáculos
         ctx.fillStyle = "#666";
         for (const obs of obstacles) {
             ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
         }
 
-        // Desenha jogadores
+        // desenha jogadores
         for (const player of Object.values(players)) {
             ctx.beginPath();
             ctx.arc(player.x, player.y, 10, 0, Math.PI * 2);
@@ -51,7 +51,7 @@ export function Canvas({ gameState, playerId, className = "" }: CanvasProps) {
             ctx.fill();
             ctx.closePath();
 
-            // Nome acima do jogador
+            // nome acima do jogador
             ctx.fillStyle = "#fff";
             ctx.font = "12px Arial";
             ctx.textAlign = "center";

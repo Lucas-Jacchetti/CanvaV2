@@ -92,16 +92,6 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       if (!roomId) return;
       this.gameService.movePlayer(roomId, client.id, data);
 
-      // const player = this.gameService.getPlayer(roomId, client.id);
-      // const finishTime = this.gameService.checkFinish(roomId, client.id);
-
-      // if (finishTime !== null) {
-      //   await this.rankingService.save(player.id, finishTime, player.name);
-      //   client.emit('playerFinished', { time: finishTime });
-
-      //   await this.emitRankingUpdate(roomId);
-      // }
-
       this.server.to(roomId).emit('state', this.gameService.getGameState(roomId))
 
     }
@@ -134,13 +124,13 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     }
 
     @WebSocketServer() server: Server;
-    onModuleInit() {
+    onModuleInit() { //loop de verificação
       setInterval(async () => {
         for (const roomId in this.gameService['games']) {
           this.gameService.updatePhysics(roomId);
           this.server.to(roomId).emit('state', this.gameService.getGameState(roomId));
 
-          // 🔍 verificar jogadores finalizados
+          // verificar jogadores finalizados
           for (const [playerId, player] of Object.entries(this.gameService.getGameState(roomId)?.players || {})) {
             const finished = this.gameService.checkFinish(roomId, playerId);
             if (finished) {

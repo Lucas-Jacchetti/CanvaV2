@@ -38,12 +38,9 @@ function GamePage(){
     return(
         <>
         <div className="relative w-screen h-screen overflow-hidden">
-            {/* Canvas ocupa toda a tela */}
             <Canvas className="absolute inset-0 w-full h-full z-0" gameState={gameState} playerId={playerId} />
 
-            {/* Interface sobreposta */}
             <div className="absolute inset-0 z-10 flex flex-col justify-between p-4 pointer-events-none">
-                {/* Topo: Tempo e Título */}
                 <div className="flex justify-between items-start">
                     {!finishTime && <p className="text-white">⏱️ Tempo: {(liveTime / 1000).toFixed(1)}s</p>}
                     {finishTime && <p className="text-green-400">🎉 Você terminou em {(finishTime / 1000).toFixed(3)}s!</p>}
@@ -60,7 +57,6 @@ function GamePage(){
                     </div>
                 </div>
 
-                {/* Fundo: Botões e Ranking */}
                 <div className="flex justify-between items-end">
                 {countDown === null &&
                     <button
