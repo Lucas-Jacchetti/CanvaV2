@@ -30,7 +30,7 @@ Um jogo 2d simples e funcional em que foi utilizado o protocolo websockets, a fi
 
 | Parâmetro   | Tipo       | Descrição                           |
 | :---------- | :--------- | :---------------------------------- |
-| `limite` | `string` | Retorna o top 10 do banco a partir do tempo |
+| `limite` | `string` | Retorna o top 10 do banco em ordem de tempo |
 
 
 
