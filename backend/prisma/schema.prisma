@@ -9,8 +9,8 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.dbs"
+  provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
 model RankingEntry{
