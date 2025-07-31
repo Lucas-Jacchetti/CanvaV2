@@ -12,6 +12,11 @@ Um jogo 2d simples e funcional em que foi utilizado o protocolo websockets, a fi
 - Tempo cronometrado
 - Botões de restart na interface e teclado
 
+## Controles
+
+- Setas para movimentação lateral
+- Barra de espaço ou seta para cima para o pulo
+- Enter para reiniciar (ou botão da interface)
 
 ## Na prática:
 
